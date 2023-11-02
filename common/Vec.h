@@ -422,7 +422,7 @@ template <typename T>
 T
 Dot(const vec3<T>& A, const vec3<T>& B)
 {
-    T Result = A.x * B.x + A.y * B.y + A.z * B.z;
+    T Result = A.x*B.x + A.y*B.y + A.z*B.z;
     return Result;
 }
 
