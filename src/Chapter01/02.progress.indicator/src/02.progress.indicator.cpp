@@ -22,7 +22,7 @@ main()
     
     for (i32 Y = 0; Y < Height; ++Y)
     {
-        fprintf(stderr, "\rScanlines Remaining: %d", (Height - Y));
+        fprintf(stderr, "\rScanlines Remaining: %d ", (Height - Y));
         fflush(stderr);
 
         for (i32 X = 0; X < Width; ++X)
