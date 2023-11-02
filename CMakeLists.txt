@@ -4,7 +4,7 @@ project(Template_VSCode_Project CXX C)
 
 set(EXTERN_LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/external)
 
-set(CMAKE_CXX_STANDARD 20) # this does nothing for MSVC, use target_compile_options below
+set(CMAKE_CXX_STANDARD 11) # this does nothing for MSVC, use target_compile_options below
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 

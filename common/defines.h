@@ -20,6 +20,9 @@ typedef int16_t int16;
 typedef int32_t int32;
 typedef int64_t int64;
 
+typedef float f32;
+typedef double f64;
+
 #define ABSOLUTE(Val) (Val) < 0 ? -(Val) : (Val)
 
 #define ASSERT(Expression)                                                     \
@@ -32,6 +35,12 @@ typedef int64_t int64;
 
 #define MAX(A, B) (A) > (B) ? A : B
 #define MIN(A, B) (A) < (B) ? A : B
+
+#ifdef _MSC_VER
+#define SHU_EXPORT __declspec(dllexport)
+#elif defined(__clang__)
+#define SHU_EXPORT __attribute__((visibility("default")))
+#endif
 
 #define DEFINES_H
 #endif

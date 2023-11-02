@@ -1,6 +1,9 @@
 #include <cstdio>
 #include <defines.h>
 #include <File.h>
+#include <Color.h>
+
+#define INVERT_SCANLINES 0
 
 int
 main()
@@ -24,20 +27,19 @@ main()
     {
         fprintf(stderr, "\rScanlines Remaining: %d ", (Height - Y));
         fflush(stderr);
-
+        
         for (i32 X = 0; X < Width; ++X)
         {
-            double R = double(X) / (Width - 1);
-            double G = double(Y) / (Height - 1);
+            double R = double(X) / double(Width-1);
+#if INVERT_SCANLINES
+            double G = double(Height-Y-1) / double(Height-1);
+#else
+            double G = double(Y) / double(Height-1);
+#endif
             double B = 0;
             
-            u8 iR = (u8)(255.999 * R);
-            u8 iG = (u8)(255.999 * G);
-            u8 iB = (u8)(255.999 * B);
-            
-            *Data++ = iR;
-            *Data++ = iG;
-            *Data++ = iB;
+            vec3d Color = {R, G, B};
+            WriteColor(&Data, Color);
         }
     }
     
