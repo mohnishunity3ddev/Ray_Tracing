@@ -71,4 +71,4 @@ include_directories(common)
 
 # Include Common SharedUtils
 add_subdirectory(common)
-add_subdirectory(src/Chapter01/01_test_project)
+add_subdirectory(src/Chapter01/01.PPM_Image_Format)
