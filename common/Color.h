@@ -3,6 +3,11 @@
 #include "Vec.h"
 
 using color = vec3d;
+color Color(f64 A, f64 B, f64 C)
+{
+    color Result = {A, B, C};
+    return Result;
+}
 
 void
 WriteColor(u8 **Data, const vec3d PixelColor)

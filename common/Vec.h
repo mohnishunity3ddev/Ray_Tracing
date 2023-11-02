@@ -96,13 +96,19 @@ template <typename T> SHU_EXPORT vec3<T> Cross(const vec3<T>& A, const vec3<T>& 
 template <typename T> SHU_EXPORT vec3<T> operator+(const vec3<T>& A, const vec3<T>& B);
 template <typename T> SHU_EXPORT vec3<T> operator-(const vec3<T>& A, const vec3<T>& B);
 template <typename T> SHU_EXPORT vec3<T> operator-(const vec3<T>& A);
+template <typename T, typename S> SHU_EXPORT vec3<T> operator*(S B, const vec3<T> &A);
+template <typename T, typename S> SHU_EXPORT vec3<T> operator*(const vec3<T> &A, S B);
+template <typename T> SHU_EXPORT vec3<T> operator*(T B, const vec3<T> &A);
 template <typename T> SHU_EXPORT vec3<T> operator*(const vec3<T>& A, T B);
 template <typename T> SHU_EXPORT vec3<T> operator/(const vec3<T>& A, const vec3<T>& B);
 template <typename T> SHU_EXPORT vec3<T> operator/(const vec3<T>& A, T B);
+template <typename T> SHU_EXPORT vec3<T> operator/(const vec3<T>& A, const i32 B);
 template <typename T> SHU_EXPORT T SqMagnitude(const vec3<T> &A);
 template <typename T> SHU_EXPORT T Magnitude(const vec3<T> &A);
 
 template <typename T> SHU_EXPORT vec3f Normalize(const vec3<T> &A);
+template <typename T> SHU_EXPORT vec3d NormalizeDouble(const vec3<T> &A);
+
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -381,9 +387,9 @@ vec3<T>
 MakeVec3(const T * const Ptr)
 {
     vec3<T> Result = {};
-
+    
     memcpy(Result.E, Ptr, sizeof(T) * 3);
-
+    
     return Result;
 }
 
@@ -392,7 +398,7 @@ vec3<T>
 Vec3(const vec2<T>& xy, T z)
 {
     vec3<T> Result = Vec3(xy.x, xy.y, z);
-
+    
     return Result;
 }
 
@@ -452,11 +458,11 @@ vec3<T>
 operator+(const vec3<T>& A, const vec3<T>& B)
 {
     vec3<T> Result;
-
+    
     Result.x = A.x + B.x;
     Result.y = A.y + B.y;
     Result.z = A.z + B.z;
-
+    
     return Result;
 }
 
@@ -465,11 +471,11 @@ vec3<T>
 operator-(const vec3<T>& A, const vec3<T>& B)
 {
     vec3<T> Result;
-
+    
     Result.x = A.x - B.x;
     Result.y = A.y - B.y;
     Result.z = A.z - B.z;
-
+    
     return Result;
 }
 
@@ -478,11 +484,37 @@ vec3<T>
 operator-(const vec3<T>& A)
 {
     vec3<T> Result;
-
+    
     Result.x = -A.x;
     Result.y = -A.y;
     Result.z = -A.z;
+    
+    return Result;
+}
 
+template <typename T, typename S>
+vec3<T>
+operator*(S B, const vec3<T> &A)
+{
+    vec3<T> Result;
+    
+    Result.x = B * A.x;
+    Result.y = B * A.y;
+    Result.z = B * A.z;
+    
+    return Result;
+}
+
+template <typename T, typename S>
+vec3<T>
+operator*(const vec3<T>& A, S B)
+{
+    vec3<T> Result;
+    
+    Result.x = B * A.x;
+    Result.y = B * A.y;
+    Result.z = B * A.z;
+    
     return Result;
 }
 
@@ -491,11 +523,24 @@ vec3<T>
 operator*(const vec3<T>& A, T B)
 {
     vec3<T> Result;
-
+    
     Result.x = B * A.x;
     Result.y = B * A.y;
     Result.z = B * A.z;
+    
+    return Result;
+}
 
+template <typename T>
+vec3<T>
+operator*(T B, const vec3<T> &A)
+{
+    vec3<T> Result;
+    
+    Result.x = B*A.x;
+    Result.y = B*A.y;
+    Result.z = B*A.z;
+    
     return Result;
 }
 
@@ -504,13 +549,13 @@ vec3<T>
 operator/(const vec3<T>& A, const vec3<T>& B)
 {
     vec3<T> Result;
-
+    
     ASSERT(B.x != 0.0f && B.y != 0.0f && B.z != 0.0f);
-
+    
     Result.x = A.x / B.x;
     Result.y = A.y / B.y;
     Result.z = A.z / B.z;
-
+    
     return Result;
 }
 
@@ -519,13 +564,28 @@ vec3<T>
 operator/(const vec3<T>& A, T B)
 {
     vec3<T> Result;
-
+    
     ASSERT(B != 0.0f);
-
+    
     Result.x = A.x / B;
     Result.y = A.y / B;
     Result.z = A.z / B;
+    
+    return Result;
+}
 
+template <typename T>
+vec3<T>
+operator/(const vec3<T> &A, const i32 B)
+{
+    vec3<T> Result;
+    
+    ASSERT(B != 0);
+    
+    Result.x = A.x / B;
+    Result.y = A.y / B;
+    Result.z = A.z / B;
+    
     return Result;
 }
 
@@ -577,7 +637,7 @@ vec3<T>::operator[](size_t Index)
     {
         ASSERT(!"Index Out of Bounds");
     }
-
+    
     return this->E[Index];
 }
 
@@ -625,6 +685,21 @@ Normalize(const vec3<T> &A)
         f32 OneByMagnitude = 1.0f / sqrtf(SqMagnitude);
         Result *= OneByMagnitude;
     }
+    return Result;
+}
+
+template <typename T>
+vec3d
+NormalizeDouble(const vec3<T> &A)
+{
+    vec3d Result = A;
+    f64 SqMagnitude = (f64)A.SqMagnitude();
+    if(SqMagnitude > 0.0)
+    {
+        f64 OneByMagnitude = 1.0 / sqrt(SqMagnitude);
+        Result *= OneByMagnitude;
+    }
+    
     return Result;
 }
 

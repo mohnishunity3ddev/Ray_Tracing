@@ -11,9 +11,9 @@ struct ray
         orig = Origin;
         dir = Direction;
     }
-    vec3d origin() const { return this->orig; }
-    vec3d direction() const { return dir; }
-    vec3d at(double t) const 
+    inline vec3d Origin() const { return this->orig; }
+    inline vec3d Direction() const { return dir; }
+    inline vec3d At(double t) const 
     {
         vec3d Result = orig + dir*t;
         return Result;

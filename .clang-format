@@ -14,7 +14,7 @@ PointerAlignment: Right
 ReferenceAlignment: Pointer
 
 # Align consecutive equals to be aligned.
-AlignConsecutiveAssignments: Consecutive
+# AlignConsecutiveAssignments: Consecutive
 # AlignConsecutiveDeclarations: Consecutive
 
 AlignTrailingComments: true
