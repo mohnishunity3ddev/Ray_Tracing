@@ -11,11 +11,11 @@ class hittable_list : public hittable
     std::vector<std::shared_ptr<hittable>> Objects;
     
     hittable_list() {}
-    hittable_list(std::shared_ptr<hittable> Object) { add(Object); }
+    hittable_list(std::shared_ptr<hittable> Object) { Add(Object); }
     
-    void clear() { Objects.clear(); }
+    void Clear() { Objects.clear(); }
     
-    void add(std::shared_ptr<hittable> Object)
+    void Add(std::shared_ptr<hittable> Object)
     {
         Objects.push_back(Object);
     }
