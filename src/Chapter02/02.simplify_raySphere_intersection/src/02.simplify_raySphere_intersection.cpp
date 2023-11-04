@@ -63,9 +63,10 @@ GetRayColor(const ray &Ray)
     }
     
     vec3d UnitDirection = NormalizeDouble(Ray.Direction());
-    f64 a = 0.5 * (UnitDirection.y + 1.0);
+    // should be in the range 0,1 for color.
+    f64 a = 0.5*(UnitDirection.y + 1.0);
     
-    color Result = (1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0);
+    color Result = (1.0 - a)*Color(1.0, 1.0, 1.0) + a*Color(0.5, 0.7, 1.0);
     return Result;
 }
 
