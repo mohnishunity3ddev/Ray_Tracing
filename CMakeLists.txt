@@ -71,14 +71,5 @@ include_directories(common)
 
 # Include Common SharedUtils
 add_subdirectory(common)
-add_subdirectory(src/Chapter01/01.PPM_Image_Format)
 
-add_subdirectory(src/Chapter01/02.progress.indicator)
-
-add_subdirectory(src/Chapter01/03.send_rays_into_the_scene)
-
-add_subdirectory(src/Chapter01/04.adding_a_sphere)
-
-add_subdirectory(src/Chapter02/01.shading_with_surface_normals)
-
-add_subdirectory(src/Chapter02/02.simplify_raySphere_intersection)
+add_subdirectory(src/Chapter01/01.RayTracer)

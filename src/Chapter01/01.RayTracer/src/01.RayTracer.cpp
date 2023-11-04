@@ -7,15 +7,6 @@
 
 #define INVERT_SCANLINES 0
 
-// Returns true if the generated ray hits the sphere.
-// (x−Cx)^2 + (y−Cy)^2 + (z−Cz)^2 = r^2
-// (P−C)⋅(P−C) = (x−Cx)^2 + (y−Cy)^2 + (z−Cz)^2 [P is any point on sphere, C is
-// the center] (P−C)⋅(P−C) = r^2 [where r is the radius] If a ray intersects the
-// sphere on its surface, then,  (P(t)−C)⋅(P(t)−C) = r^2
-// ((A+tB)−C)⋅((A+tB)−C) = r^2 [(A + tB) is the ray. A is the Origin, B is its
-// direction] (B⋅B)*t^2 + 2*(B⋅(A−C))*t + ((A−C)⋅(A−C)−r^2)=0 [b here is the ray
-// direction, A is the ray origin] This is a quadratic equation, Roots for t
-// depends on the value of determinant .
 f64
 HitSphere(const vec3d &SphereCenter, f64 SphereRadius, const ray &Ray)
 {
@@ -28,15 +19,15 @@ HitSphere(const vec3d &SphereCenter, f64 SphereRadius, const ray &Ray)
     f64 Half_b = Dot(OC, Ray.Direction());
     // c here is the constant in the quadratic equation of t described above.
     // c = ((A−C)⋅(A−C)−r^2)
-    f64 c = OC.SqMagnitude() - SphereRadius*SphereRadius;
+    f64 c = OC.SqMagnitude() - SphereRadius * SphereRadius;
     
     // NOTE:
     // -b -sqrt(b2 - 4ac) / 2a
     // if h = 2*b, this becomes -h - sqrt(h2 - ac) / a
-    f64 Discriminant = Half_b*Half_b - a*c;
-    
+    f64 Discriminant = Half_b * Half_b - a * c;
+
     f64 Result = 0.;
-    if(Discriminant < 0.)
+    if (Discriminant < 0.)
     {
         Result = -1.;
     }
@@ -44,7 +35,7 @@ HitSphere(const vec3d &SphereCenter, f64 SphereRadius, const ray &Ray)
     {
         Result = (-Half_b - sqrt(Discriminant)) / (a);
     }
-    
+
     return Result;
 }
 
@@ -61,12 +52,12 @@ GetRayColor(const ray &Ray)
         color NormalColor = 0.5 * Color(N.x + 1, N.y + 1, N.z + 1);
         return NormalColor;
     }
-    
+
     vec3d UnitDirection = NormalizeDouble(Ray.Direction());
     // should be in the range 0,1 for color.
-    f64 a = 0.5*(UnitDirection.y + 1.0);
-    
-    color Result = (1.0 - a)*Color(1.0, 1.0, 1.0) + a*Color(0.5, 0.7, 1.0);
+    f64 a = 0.5 * (UnitDirection.y + 1.0);
+
+    color Result = (1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0);
     return Result;
 }
 
@@ -107,7 +98,7 @@ main()
     memset(Data, 0, RequiredSize);
 
     ppm PPM = {};
-    PPM.Filename = "SimplifyRaySphereIntersection.ppm";
+    PPM.Filename = "RayTracer.ppm";
     PPM.Width = ImageWidth;
     PPM.Height = ImageHeight;
     PPM.ColorData = (u8 *)Data;
