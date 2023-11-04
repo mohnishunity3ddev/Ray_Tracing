@@ -11,8 +11,10 @@ class camera
     f64 AspectRatio = 1.0;
     i32 ImageWidth = 100;
     const char *Filename;
+    i32 NumSamples = 10; // Count of random samples around each pixel.
     
-    void Render(const hittable &World)
+    void
+    Render(const hittable &World)
     {
         if(!Initialized)
         {
@@ -26,16 +28,22 @@ class camera
             
             for(i32 X = 0; X < this->ImageWidth; ++X)
             {
-                vec3d PixelCenter = this->Pixel00 + 
-                                    (X*this->PixelDeltaU) + (Y*this->PixelDeltaV);
-                vec3d RayDirection = PixelCenter - this->Center;
-                ray Ray(this->Center, RayDirection);
+                color PixelColor = Color(0, 0, 0);
                 
-                color PixelColor = RayColor(Ray, World);
-                WriteColor(&this->Data, PixelColor);
+                // Take the required number of samples
+                for(i32 SampleIndex = 0; 
+                    SampleIndex < NumSamples; 
+                    ++SampleIndex)
+                {
+                    // Basically sample around a random position inside the pixel "square"
+                    ray Ray = GetRandomRayAround(X, Y);
+                    PixelColor += RayColor(Ray, World);
+                }
+                    
+                WriteColor(&this->Data, PixelColor, this->NumSamples);
             }
         }
-
+        
         WritePPM(&this->PPMFile);
         FreeImageData();
     }
@@ -51,7 +59,8 @@ class camera
     
     b32 Initialized = false;
     
-    void Initialize()
+    void
+    Initialize()
     {
         // Calculate Image Height and ensure that its atleast 1.
         this->ImageHeight = (i32)(this->ImageWidth / this->AspectRatio);
@@ -92,8 +101,37 @@ class camera
         
         Initialized = true;
     }
+
+    ray
+    GetRandomRayAround(i32 X, i32 Y) const
+    {
+        vec3d PixelCenter = this->Pixel00 + (X*this->PixelDeltaU) + (Y*this->PixelDeltaV);
+        
+        // Random Position inside the Pixel Square
+        vec3d PixelSample = PixelCenter + PixelSampleSquare();
+        
+        vec3d RayOrigin = this->Center;
+        vec3d RayDirection = PixelSample - this->Center;
+        
+        ray Ray(RayOrigin, RayDirection);
+        return Ray;
+    }
     
-    color RayColor(const ray &Ray, const hittable &World) const
+    vec3d PixelSampleSquare() const
+    {
+        // Random value b/w [-0.5,0.5)
+        f64 X = -0.5 + Rand01();
+        f64 Y = -0.5 + Rand01();
+        
+        // Random Position Around the Pixel Square
+        vec3d Result = X*this->PixelDeltaU + Y*this->PixelDeltaV;
+        
+        return Result;
+    }
+    
+
+    color
+    RayColor(const ray &Ray, const hittable &World) const
     {
         // Render the "Hit" Object
         hit_record Record;
@@ -114,7 +152,8 @@ class camera
         return Result;
     }
     
-    void FreeImageData()
+    void
+    FreeImageData()
     {
         if(this->PPMFile.ColorData)
         {

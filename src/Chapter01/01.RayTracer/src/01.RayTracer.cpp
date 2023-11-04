@@ -9,9 +9,10 @@ int
 main()
 {
     camera Camera;
-    Camera.AspectRatio = 16.0 / 9.0;
+    Camera.AspectRatio = 16.0/9.0;
     Camera.ImageWidth = 400;
     Camera.Filename = "RayTracer.ppm";
+    Camera.NumSamples = 100;
     
     // World.
     hittable_list World;
