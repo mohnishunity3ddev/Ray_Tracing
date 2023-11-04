@@ -60,8 +60,11 @@ class sphere : public hittable
         // intersection quadratic eq.
         Record.t = Root;
         Record.P = Ray.At(Record.t);
-        Record.Normal = (Record.P - center) / radius;
-        
+
+        // This is a Unit Vector.
+        vec3d OutwardNormal = ((Record.P - center) / radius);
+        Record.set_face_normal(Ray, OutwardNormal);
+
         return true;
     }
   
