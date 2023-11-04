@@ -30,9 +30,9 @@ class hittable_list : public hittable
         
         for(const auto &Object : Objects)
         {
-            if(Object->Hit(Ray, Ray_TMin, Ray_TMax, TempRecord))
+            if(Object->Hit(Ray, Ray_TMin, ClosestSoFar, TempRecord))
             {
-                HitAnything = true;
+                HitAnything = true; 
                 ClosestSoFar = TempRecord.t;
                 Record = TempRecord;
             }

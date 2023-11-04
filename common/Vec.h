@@ -74,6 +74,8 @@ struct vec3
     inline T Magnitude() const;
     inline T Dot(const vec3<T> &A);
     inline vec3<T> Cross(const vec3<T> &A);
+    
+    static inline vec3<T> One();
 };
 typedef vec3<i32> vec3i;
 typedef vec3<f32> vec3f;
@@ -655,6 +657,19 @@ vec3<T>::Magnitude() const
 {
     // NOTE: Change this to use ouw own Square Root function
     T Result = sqrtf(this->x*this->x + this->y*this->y + this->z*this->z);
+    return Result;
+}
+
+template <typename T>
+vec3<T>
+vec3<T>::One()
+{
+    vec3<T> Result;
+    
+    Result.x = (T)1.0;
+    Result.y = (T)1.0;
+    Result.z = (T)1.0;
+
     return Result;
 }
 
