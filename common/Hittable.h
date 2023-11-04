@@ -1,6 +1,7 @@
 #if !defined(HITTABLE_H)
 #include "defines.h"
 #include "Ray.h"
+#include "Interval.h"
 
 class hit_record
 {
@@ -29,7 +30,8 @@ class hittable
 {
   public:
     virtual ~hittable() = default;
-    virtual bool Hit(const ray &Ray, f64 Ray_TMin, f64 Ray_TMax, hit_record &Record) const = 0;
+    virtual bool Hit(const ray &Ray, const interval &Interval,
+                     hit_record &Record) const = 0;
 };
 
 #define HITTABLE_H

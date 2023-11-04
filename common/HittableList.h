@@ -21,23 +21,22 @@ class hittable_list : public hittable
     }
     
     bool
-    Hit(const ray &Ray, f64 Ray_TMin, f64 Ray_TMax,
-        hit_record &Record) const override
+    Hit(const ray &Ray, const interval &Interval, hit_record &Record) const override
     {
         hit_record TempRecord;
         b32 HitAnything = false;
-        f64 ClosestSoFar = Ray_TMax;
+        f64 ClosestSoFar = Interval.Max;
         
         for(const auto &Object : Objects)
         {
-            if(Object->Hit(Ray, Ray_TMin, ClosestSoFar, TempRecord))
+            if(Object->Hit(Ray, interval(Interval.Min, ClosestSoFar), TempRecord))
             {
                 HitAnything = true; 
                 ClosestSoFar = TempRecord.t;
                 Record = TempRecord;
             }
         }
-
+        
         return HitAnything;
     }
 };

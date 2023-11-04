@@ -18,8 +18,7 @@ class sphere : public hittable
     // the ray direction, A is the ray origin] This is a quadratic equation,
     // Roots for t depends on the value of determinant .
     bool
-    Hit(const ray &Ray, f64 Ray_TMin, f64 Ray_TMax,
-        hit_record &Record) const override
+    Hit(const ray &Ray, const interval &Interval, hit_record &Record) const override
     {
         vec3d OC = Ray.Origin() - center;
         
@@ -44,27 +43,27 @@ class sphere : public hittable
         }
         
         f64 SqRootDiscriminant = sqrt(Discriminant);
-
+        
         // Find the nearest root that lies within the acceptable range.
         f64 Root = (-Half_b - SqRootDiscriminant) / a;
-        if(Root <= Ray_TMin || Root > Ray_TMax)
+        if(!Interval.Surrounds(Root))
         {
             Root = (-Half_b + SqRootDiscriminant) / a;
-            if(Root <= Ray_TMin || Root > Ray_TMax)
+            if(!Interval.Surrounds(Root))
             {
                 return false;
             }
         }
-
+        
         // The Root is actually a value of t that satisfies the ray-sphere
         // intersection quadratic eq.
         Record.t = Root;
         Record.P = Ray.At(Record.t);
-
+        
         // This is a Unit Vector.
         vec3d OutwardNormal = ((Record.P - center) / radius);
         Record.set_face_normal(Ray, OutwardNormal);
-
+        
         return true;
     }
   

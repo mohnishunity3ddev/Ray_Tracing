@@ -16,7 +16,7 @@ GetRayColor(const ray &Ray, const hittable &World)
 {
     // Render the "Hit" Object
     hit_record Record;
-    if(World.Hit(Ray, 0, Infinity, Record))
+    if(World.Hit(Ray, interval(0, Infinity), Record))
     {
         // Converting Normal Vector Range -1,1 to 0,1 range so that it can be
         // used as a color.
