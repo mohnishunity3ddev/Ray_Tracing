@@ -30,9 +30,39 @@ const f64 Infinity = std::numeric_limits<f64>::infinity();
 const f64 pi = 3.1415926535897932385;
 
 // Utility Functions
-inline f64 Deg2Rad(const f64 Degrees)
+inline f64
+Deg2Rad(const f64 Degrees)
 {
     f64 Result = (Degrees*pi) / 180.0;
+    return Result;
+}
+
+// CPP Random sometimes gives faulty results.
+#define USE_CPP_RANDOM 0
+
+#if USE_CPP_RANDOM
+#include <random>
+inline f64
+Rand01()
+{
+    static std::uniform_real_distribution<f64> Distribution(0., 1.);
+    static std::mt19937 Generator;
+    f64 Result = Distribution(Generator);
+    return Result;
+}
+#else
+inline f64
+Rand01()
+{
+    f64 Result = rand() / (RAND_MAX + 1.);
+    return Result;
+}
+#endif
+
+inline f64
+RandRange(f64 Min, f64 Max)
+{
+    f64 Result = Min + ((Max - Min)*Rand01());
     return Result;
 }
 

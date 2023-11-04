@@ -8,6 +8,12 @@
 int
 main()
 {
+    while(1)
+    {
+        f64 r = Rand01();
+        int x = 0;
+    }
+
     camera Camera;
     Camera.AspectRatio = 16.0 / 9.0;
     Camera.ImageWidth = 400;
