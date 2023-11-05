@@ -136,7 +136,7 @@ class camera
     {
         // Render the "Hit" Object
         hit_record Record;
-
+        
         // We've exceeded the max bounce limit. No more light is gathered.
         if(BounceCount <= 0)
         {
@@ -144,6 +144,7 @@ class camera
             return Result;
         }
 
+#define LAMBERTIAN 1
         // NOTE:
         // There’s also a subtle bug that we need to address. A ray will attempt
         // to accurately calculate the intersection point when it intersects
@@ -161,13 +162,21 @@ class camera
         f64 ShadowAcneCorrection = 0.001;
         if(World.Hit(Ray, interval(ShadowAcneCorrection, Infinity), Record))
         {
+
+#if !LAMBERTIAN
             // NOTE: When a ray is incident on a surface with a normal
             // then, we want to get the direction of the ray when it reflects
             // from the said surface. This is that direction
-            vec3d RandDirection = vec3d::RandomOnHemisphere(Record.Normal);
-            
-            // Converting Normal Vector Range -1,1 to 0,1 range so that it can be
-            // used as a color.
+            vec3d Direction = vec3d::RandomOnHemisphere(Record.Normal);
+#else
+            // NOTE: Lambertial Diffuse basically says that reflected rays(which
+            // this one is), are much closer to the normal that anywhere else.
+            // So choosing a random vector around hemisphere will be more
+            // generalized and chances the vector being closer to the surface
+            // normal will be less so we are doing this instead.
+            vec3d Direction = Record.Normal + vec3d::RandomUnitVector();
+#endif            
+
 #if 1
             // As an example, we want to simulate a surface which absorbs 50% of
             // the incidentray's energy and reflect the rest of the 50%. Giving
@@ -176,15 +185,17 @@ class camera
             // will continue calling the RayColor function until it does not hit
             // anything. So we should make sure that the number of bounces is
             // mentioned and is a finite value.
-            color Result = 0.5*RayColor(ray(Record.P, RandDirection), 
+            color Result = 0.5*RayColor(ray(Record.P, Direction), 
                                         BounceCount-1, World);
 #else
+            // Converting Normal Vector Range -1,1 to 0,1 range so that it can be
+            // used as a color.
             color Result = 0.5*(Record.Normal + vec3d::One());
 #endif
             return Result;
         }
         
-        // Render the Sky.
+        // NOTE: Render the Sky.
         vec3d UnitDirection = Normalize(Ray.Direction());
         // should be in the range (0,1) for color.
         f64 a = 0.5*(UnitDirection.y + 1.0);
