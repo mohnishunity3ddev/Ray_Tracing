@@ -143,8 +143,23 @@ class camera
             color Result = Color(0, 0, 0);
             return Result;
         }
-        
-        if(World.Hit(Ray, interval(0, Infinity), Record))
+
+        // NOTE:
+        // There’s also a subtle bug that we need to address. A ray will attempt
+        // to accurately calculate the intersection point when it intersects
+        // with a surface. Unfortunately for us, this calculation is susceptible
+        // to floating point rounding errors which can cause the intersection
+        // point to be ever so slightly off. This means that the origin of the
+        // next ray, the ray that is randomly scattered off of the surface, is
+        // unlikely to be perfectly flush with the surface. It might be just
+        // above the surface. It might be just below the surface. If the ray's
+        // origin is just below the surface then it could intersect with that
+        // surface again. Which means that it will find the nearest surface at
+        // t=0.00000001 or whatever floating point approximation the hit
+        // function gives us. The simplest hack to address this is just to
+        // ignore hits that are very close to the calculated intersection point:
+        f64 ShadowAcneCorrection = 0.001;
+        if(World.Hit(Ray, interval(ShadowAcneCorrection, Infinity), Record))
         {
             // NOTE: When a ray is incident on a surface with a normal
             // then, we want to get the direction of the ray when it reflects
