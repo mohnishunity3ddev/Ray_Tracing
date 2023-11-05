@@ -49,6 +49,10 @@ template <typename T> SHU_EXPORT vec2f Normalize(const vec2<T> &A);
 template<typename T>
 struct vec3
 {
+  private:
+    static inline vec3<T> RandomInUnitSphere();
+  
+  public:
     union
     {
         struct { T x, y, z; };
@@ -75,7 +79,11 @@ struct vec3
     inline T Dot(const vec3<T> &A);
     inline vec3<T> Cross(const vec3<T> &A);
     
+    static inline vec3<T> Rand01();
+    static inline vec3<T> RandRange(T Min, T Max);
     static inline vec3<T> One();
+    static inline vec3<T> RandomUnitVector();
+    static inline vec3<T> RandomOnHemisphere(const vec3<T> &Normal);
 };
 typedef vec3<i32> vec3i;
 typedef vec3<f32> vec3f;
@@ -108,9 +116,9 @@ template <typename T> SHU_EXPORT vec3<T> operator/(const vec3<T>& A, const i32 B
 template <typename T> SHU_EXPORT T SqMagnitude(const vec3<T> &A);
 template <typename T> SHU_EXPORT T Magnitude(const vec3<T> &A);
 
-template <typename T> SHU_EXPORT vec3f Normalize(const vec3<T> &A);
-template <typename T> SHU_EXPORT vec3d NormalizeDouble(const vec3<T> &A);
+template <typename T> SHU_EXPORT vec3<T> Normalize(const vec3<T> &A);
 
+template <typename T> internal T DotStatic(const vec3<T>& A, const vec3<T>& B);
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -430,7 +438,15 @@ Dot(const vec3<T>& A, const vec3<T>& B)
 
 template <typename T>
 T
-vec3<T>::Dot(const vec3<T>& A)
+DotStatic(const vec3<T>& A, const vec3<T>& B)
+{
+    T Result = A.x*B.x + A.y*B.y + A.z*B.z;
+    return Result;
+}
+
+template <typename T>
+T
+vec3<T>::Dot(const vec3<T> &A)
 {
     T Result = A.x*this->x + A.y*this->y + A.z*this->z;
     return Result;
@@ -690,31 +706,83 @@ Magnitude(const vec3<T> &A)
 }
 
 template <typename T>
-vec3f
-Normalize(const vec3<T> &A)
+vec3<T>
+vec3<T>::Rand01()
 {
-    vec3f Result = A;
-    f32 SqMagnitude = (f32)A.SqMagnitude();
-    if(SqMagnitude > 0.0f)
-    {
-        f32 OneByMagnitude = 1.0f / sqrtf(SqMagnitude);
-        Result *= OneByMagnitude;
-    }
+    vec3<T> Result;
+    Result.x = Rand01Generic<T>();
+    Result.y = Rand01Generic<T>();
+    Result.z = Rand01Generic<T>();
     return Result;
 }
 
 template <typename T>
-vec3d
-NormalizeDouble(const vec3<T> &A)
+vec3<T>
+vec3<T>::RandRange(T Min, T Max)
 {
-    vec3d Result = A;
-    f64 SqMagnitude = (f64)A.SqMagnitude();
-    if(SqMagnitude > 0.0)
+    vec3<T> Result;
+    Result.x = Min + ((Max - Min)*Rand01Generic<T>());
+    Result.y = Min + ((Max - Min)*Rand01Generic<T>());
+    Result.z = Min + ((Max - Min)*Rand01Generic<T>());
+    return Result;
+}
+
+template <typename T>
+vec3<T>
+vec3<T>::RandomInUnitSphere()
+{
+    vec3<T> Result;
+    while(1)
     {
-        f64 OneByMagnitude = 1.0 / sqrt(SqMagnitude);
-        Result *= OneByMagnitude;
+        Result = vec3<T>::RandRange(-1, 1);
+        // NOTE: Rejection Sampling. Reject all vectors that are outside the
+        // unit sphere. Meaning they all have magnitudes more than the radius 1.
+        if(Result.SqMagnitude() < (T)1)
+        {
+            break;
+        }
     }
     
+    return Result;
+}
+
+template <typename T>
+vec3<T>
+vec3<T>::RandomUnitVector()
+{
+    vec3<T> Result = RandomInUnitSphere();
+    Result = Normalize(Result);
+    
+    return Result;
+}
+
+template <typename T>
+vec3<T>
+vec3<T>::RandomOnHemisphere(const vec3<T> &Normal)
+{
+    vec3<T> Result = RandomUnitVector();
+    T DotP = DotStatic(Result, Normal);
+    if(DotP < (T)0)
+    {
+        Result = -Result;
+    }
+
+    return Result;
+}
+
+template <typename T>
+vec3<T>
+Normalize(const vec3<T> &A)
+{
+    static_assert(std::is_same<T, f32>::value || std::is_same<T, f64>::value,
+                  "Only f32 and f64 are supported");
+    vec3<T> Result = A;
+    T SqMagnitude = A.SqMagnitude();
+    if(SqMagnitude > (T)0)
+    {
+        f64 OneByMagnitude = (T)1.0 / sqrt(SqMagnitude);
+        Result *= OneByMagnitude;
+    }
     return Result;
 }
 

@@ -12,7 +12,7 @@ class hit_record
     // the t in ray's eq: A + tB
     f64 t;
     b32 FrontFace;
-
+    
     // NOTE: Sets the hit record normal vector
     // The OutwardNormal is assumed to be of unit length
     void set_face_normal(const ray &Ray, const vec3d &OutwardNormal)

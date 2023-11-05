@@ -12,6 +12,7 @@ class camera
     i32 ImageWidth = 100;
     const char *Filename;
     i32 NumSamples = 10; // Count of random samples around each pixel.
+    i32 MaxBounces = 10; // The Maximum number of bounces the rays are allowed to have.
     
     void
     Render(const hittable &World)
@@ -37,7 +38,7 @@ class camera
                 {
                     // Basically sample around a random position inside the pixel "square"
                     ray Ray = GetRandomRayAround(X, Y);
-                    PixelColor += RayColor(Ray, World);
+                    PixelColor += RayColor(Ray, MaxBounces, World);
                 }
                     
                 WriteColor(&this->Data, PixelColor, this->NumSamples);
@@ -101,7 +102,7 @@ class camera
         
         Initialized = true;
     }
-
+    
     ray
     GetRandomRayAround(i32 X, i32 Y) const
     {
@@ -129,22 +130,47 @@ class camera
         return Result;
     }
     
-
+    
     color
-    RayColor(const ray &Ray, const hittable &World) const
+    RayColor(const ray &Ray, i32 BounceCount, const hittable &World) const
     {
         // Render the "Hit" Object
         hit_record Record;
+
+        // We've exceeded the max bounce limit. No more light is gathered.
+        if(BounceCount <= 0)
+        {
+            color Result = Color(0, 0, 0);
+            return Result;
+        }
+        
         if(World.Hit(Ray, interval(0, Infinity), Record))
         {
+            // NOTE: When a ray is incident on a surface with a normal
+            // then, we want to get the direction of the ray when it reflects
+            // from the said surface. This is that direction
+            vec3d RandDirection = vec3d::RandomOnHemisphere(Record.Normal);
+            
             // Converting Normal Vector Range -1,1 to 0,1 range so that it can be
             // used as a color.
+#if 1
+            // As an example, we want to simulate a surface which absorbs 50% of
+            // the incidentray's energy and reflect the rest of the 50%. Giving
+            // a nice gray color.
+            // NOTE: Notice that this is a recursive function, if unguarded it
+            // will continue calling the RayColor function until it does not hit
+            // anything. So we should make sure that the number of bounces is
+            // mentioned and is a finite value.
+            color Result = 0.5*RayColor(ray(Record.P, RandDirection), 
+                                        BounceCount-1, World);
+#else
             color Result = 0.5*(Record.Normal + vec3d::One());
+#endif
             return Result;
         }
         
         // Render the Sky.
-        vec3d UnitDirection = NormalizeDouble(Ray.Direction());
+        vec3d UnitDirection = Normalize(Ray.Direction());
         // should be in the range (0,1) for color.
         f64 a = 0.5*(UnitDirection.y + 1.0);
         color Result = (1.0 - a)*Color(1.0, 1.0, 1.0) + a*Color(0.5, 0.7, 1.0);

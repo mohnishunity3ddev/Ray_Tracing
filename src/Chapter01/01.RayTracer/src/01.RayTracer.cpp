@@ -13,6 +13,17 @@ main()
     Camera.ImageWidth = 400;
     Camera.Filename = "RayTracer.ppm";
     Camera.NumSamples = 100;
+    Camera.MaxBounces = 50;
+
+#if 0
+    while(1)
+    {
+        vec3f V = vec3f::RandomOnHemisphere(vec3f::One());
+        f64 Magnitude = V.Magnitude();
+        f64 Dot = V.x + V.y + V.z;
+        int x = 0;
+    }
+#endif
     
     // World.
     hittable_list World;

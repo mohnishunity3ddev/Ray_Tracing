@@ -25,6 +25,8 @@ typedef int64_t int64;
 typedef float f32;
 typedef double f64;
 
+#define internal static
+
 // Constants
 const f64 Infinity = std::numeric_limits<f64>::infinity();
 const f64 pi = 3.1415926535897932385;
@@ -63,6 +65,14 @@ inline f64
 RandRange(f64 Min, f64 Max)
 {
     f64 Result = Min + ((Max - Min)*Rand01());
+    return Result;
+}
+
+template <typename T>
+inline T
+Rand01Generic()
+{
+    T Result = (T)rand() / ((T)RAND_MAX + (T)1);
     return Result;
 }
 

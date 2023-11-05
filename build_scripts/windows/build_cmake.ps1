@@ -32,7 +32,7 @@ Set-Location $BIN_DIR_PATH
 if(!$is_release) {
     cmake -DUSE_DEBUG=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -S $PROJECT_ROOT_DIR_PATH -B . -GNinja
 } else {
-    cmake -DUSE_DEBUG=OFF -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release -S $PROJECT_ROOT_DIR_PATH -B . -GNinja
+    cmake -DUSE_DEBUG=OFF -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-O3" -S $PROJECT_ROOT_DIR_PATH -B . -GNinja
 }
 
 # Build cmake files with Ninja

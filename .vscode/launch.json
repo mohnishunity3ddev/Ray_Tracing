@@ -25,6 +25,28 @@
             "cwd": "${fileDirname}",
             "environment": [],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "(Windows) Launch Debug",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/Chapter01/01.RayTracer/bin/01.RayTracer_Debug.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/src/Chapter01/01.RayTracer/bin",
+            "environment": [],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "(Windows) Launch Release",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "{workspaceRoot}/src/Chapter01/01.RayTracer/bin/01.RayTracer_Release.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "{workspaceRoot}/src/Chapter01/01.RayTracer/bin",
+            "environment": [],
+            "console": "integratedTerminal"
         }
 
     ]
