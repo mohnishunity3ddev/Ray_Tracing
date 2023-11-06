@@ -99,7 +99,7 @@ class dielectric : public material
 {
   public:
     dielectric(f64 IndexOfRefraction) : indexOfRefraction(IndexOfRefraction) {}
-
+    
     b32
     Scatter(const ray &RayIn, const hit_record &Record, color &Attenuation,
             ray &ScatteredRay) const override
@@ -108,9 +108,24 @@ class dielectric : public material
         f64 RefractionRatio = Record.FrontFace ? (1./indexOfRefraction) : indexOfRefraction;
 
         vec3d UnitDirection = Normalize(RayIn.Direction());
-        vec3d Refracted = Refract(UnitDirection, Record.Normal, RefractionRatio);
+        f64 CosTheta = MIN(Dot(-UnitDirection, Record.Normal), 1.);
+        f64 SinTheta = sqrt(1. - CosTheta*CosTheta);
 
-        ScatteredRay = ray(Record.P, Refracted);
+        // NOTE: If this is > 1, then, this would invalidate snell's law.
+        // SinTheta cannot be greater than 1.
+        b32 TotalInternalReflection = (RefractionRatio*SinTheta > 1.);
+
+        vec3d Direction;
+        if(TotalInternalReflection)
+        {
+            Direction = Reflect(UnitDirection, Record.Normal);
+        }
+        else
+        {
+            Direction = Refract(UnitDirection, Record.Normal, RefractionRatio);
+        }
+        
+        ScatteredRay = ray(Record.P, Direction);
         
         return true;
     }

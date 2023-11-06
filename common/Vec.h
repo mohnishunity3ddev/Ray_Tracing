@@ -517,6 +517,7 @@ vec3<T>
 Refract(const vec3<T> &Incident, const vec3<T> &Normal, const f64 N1ByN2)
 {
     f64 CosTheta = MIN(Dot(-Incident, Normal), 1.0);
+    
     vec3<T> RPerpendicular = N1ByN2*(Incident + CosTheta*Normal);
     vec3<T> RParallel = -sqrt(ABSOLUTE(1.0 - RPerpendicular.SqMagnitude()))*Normal;
     
