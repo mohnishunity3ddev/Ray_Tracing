@@ -14,6 +14,7 @@ class camera
     const char *Filename;
     i32 NumSamples = 10; // Count of random samples around each pixel.
     i32 MaxBounces = 10; // The Maximum number of bounces the rays are allowed to have.
+    f64 VerticalFOV = 90.0; // Vertical Field of View of the camera.
     
     void
     Render(const hittable &World)
@@ -72,7 +73,9 @@ class camera
         
         // Calculate Viewport Dimensions
         f64 FocalLength = 1.0;
-        f64 ViewportHeight = 2.0;
+        f64 VerticalAngle = Deg2Rad(this->VerticalFOV);
+        f64 h = tan(VerticalAngle*0.5);
+        f64 ViewportHeight = 2.0*h*FocalLength;
         f64 ViewportWidth = ViewportHeight * ((f64)(this->ImageWidth)/this->ImageHeight);
         
         // Calculate the vectors along the horizontal and down the vertical viewport
