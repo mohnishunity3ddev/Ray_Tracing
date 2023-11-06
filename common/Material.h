@@ -116,7 +116,7 @@ class dielectric : public material
         b32 TotalInternalReflection = (RefractionRatio*SinTheta > 1.);
 
         vec3d Direction;
-        if(TotalInternalReflection)
+        if(TotalInternalReflection || (Reflectance(CosTheta, RefractionRatio) > Rand01()))
         {
             Direction = Reflect(UnitDirection, Record.Normal);
         }
@@ -129,9 +129,21 @@ class dielectric : public material
         
         return true;
     }
-
+  
   private:
     f64 indexOfRefraction;
+
+    // NOTE: Every glass material has varied reflectance based on the angle of
+    // incidence, how to get the reflectance is an ugly formula, but we can use
+    // schlick approcimation here.
+    f64
+    Reflectance(f64 CosTheta, f64 RefractionRatio) const
+    {
+        f64 R0 = (1.0-RefractionRatio) / (1.0+RefractionRatio);
+        R0 = R0*R0;
+        f64 Result = R0 + (1.0-R0)*pow((1.0-CosTheta), 5);
+        return Result;
+    }
 };
 
 #define MATERIAL_H
