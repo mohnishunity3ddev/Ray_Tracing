@@ -4,6 +4,7 @@
 #include "Ray.h"
 #include "Hittable.h"
 #include "Color.h"
+#include "Vec.h"
 
 // NOTE: Material class for different kinds of materials in the scene.
 // It has two jobs:
@@ -15,7 +16,7 @@ class material
 {
   public:
     virtual ~material() = default;
-
+    
     // NOTE: Produces a scattered ray based on the incident ray. This function
     // basically simulates how the incident ray gets reflected by the surface
     // with this kind of a material.
@@ -26,7 +27,7 @@ class lambertian : public material
 {
   public:
     lambertian(const color &A) : albedo(A) {}
-
+    
     b32
     Scatter(const ray &RayIn, const hit_record &Record, color &Attenuation,
             ray &ScatteredRay) const override
@@ -58,7 +59,10 @@ class lambertian : public material
 class metal : public material
 {
   public:
-    metal(const color &a) : albedo(a) {}
+    metal(const color &a, const f64 &Fuzz)
+        : albedo(a), fuzz((Fuzz < 1) ? Fuzz : 1)
+    {
+    }
     
     b32
     Scatter(const ray &RayIn, const hit_record &Record, color &Attenuation,
@@ -67,15 +71,28 @@ class metal : public material
         vec3d InDir = Normalize(RayIn.Direction());
         vec3d ReflectedRay = Reflect(InDir, Record.Normal);
 
-        ScatteredRay = ray(Record.P, ReflectedRay);
+        vec3d FuzzVector = fuzz*(vec3d::RandomUnitVector());
+        
+        // The idea is that basically wherever the reflected ray ends up, we
+        // make a sphere there with the radius = fuzz, and then the same
+        // reflected ray gets a different endpoint on the surface of the sphere.
+        // If the fuzz factor is more, then radius of that sphere will be more
+        // which would increase the haziness/fuzziness of the reflections.
+        ScatteredRay = ray(Record.P, ReflectedRay + FuzzVector);
+        
         Attenuation = albedo;
-
+        
         return true;
     }
   
   
   private:
     color albedo;
+
+    // NOTE: To make the reflections fuzzy or a little bit hazy.
+    // The more this fuzz factor, the more distorted/imperfect the reflected
+    // vector is
+    f64 fuzz; 
 };
 
 #define MATERIAL_H
