@@ -119,7 +119,8 @@ template <typename T> SHU_EXPORT T SqMagnitude(const vec3<T> &A);
 template <typename T> SHU_EXPORT T Magnitude(const vec3<T> &A);
 
 template <typename T> SHU_EXPORT vec3<T> Normalize(const vec3<T> &A);
-template <typename T> SHU_EXPORT vec3<T> Reflect(const vec3<T> &V, const vec3<T> &N);
+template <typename T> SHU_EXPORT vec3<T> Reflect(const vec3<T> &Incident, const vec3<T> &Normal);
+template <typename T> SHU_EXPORT vec3<T> Refract(const vec3<T> &Incident, const vec3<T> &Normal, const f64 N1ByN2);
 
 template <typename T> internal T DotStatic(const vec3<T>& A, const vec3<T>& B);
 
@@ -506,6 +507,21 @@ Reflect(const vec3<T> &V, const vec3<T> &N)
     }
     
     return Result;
+}
+
+// Proof is present in GoodNotes - Snell's Law Vector Form
+// N1ByN2 is refractive Index of the incident medium divided by the refractive
+// index of the refracting medium.
+template <typename T>
+vec3<T>
+Refract(const vec3<T> &Incident, const vec3<T> &Normal, const f64 N1ByN2)
+{
+    f64 CosTheta = MIN(Dot(-Incident, Normal), 1.0);
+    vec3<T> RPerpendicular = N1ByN2*(Incident + CosTheta*Normal);
+    vec3<T> RParallel = -sqrt(ABSOLUTE(1.0 - RPerpendicular.SqMagnitude()))*Normal;
+    
+    vec3<T> Refracted = (RPerpendicular + RParallel);
+    return Refracted;
 }
 
 template <typename T>

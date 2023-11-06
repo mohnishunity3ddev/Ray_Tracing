@@ -95,5 +95,29 @@ class metal : public material
     f64 fuzz; 
 };
 
+class dielectric : public material
+{
+  public:
+    dielectric(f64 IndexOfRefraction) : indexOfRefraction(IndexOfRefraction) {}
+
+    b32
+    Scatter(const ray &RayIn, const hit_record &Record, color &Attenuation,
+            ray &ScatteredRay) const override
+    {
+        Attenuation = Color(1., 1., 1.);
+        f64 RefractionRatio = Record.FrontFace ? (1./indexOfRefraction) : indexOfRefraction;
+
+        vec3d UnitDirection = Normalize(RayIn.Direction());
+        vec3d Refracted = Refract(UnitDirection, Record.Normal, RefractionRatio);
+
+        ScatteredRay = ray(Record.P, Refracted);
+        
+        return true;
+    }
+
+  private:
+    f64 indexOfRefraction;
+};
+
 #define MATERIAL_H
 #endif

@@ -12,8 +12,8 @@ main()
     hittable_list World;
 
     auto material_ground = std::make_shared<lambertian>(Color(0.8, 0.8, 0.0));
-    auto material_center = std::make_shared<lambertian>(Color(0.7, 0.3, 0.3));
-    auto material_left = std::make_shared<metal>(Color(0.8, 0.8, 0.8), 0.5);
+    auto material_center = std::make_shared<dielectric>(1.5);
+    auto material_left = std::make_shared<dielectric>(1.5);
     auto material_right = std::make_shared<metal>(Color(0.8, 0.6, 0.2), 0.85);
     
     World.Add(make_shared<sphere>(Vec3d( 0.0, -100.5, -1.0), 100.0, material_ground));
