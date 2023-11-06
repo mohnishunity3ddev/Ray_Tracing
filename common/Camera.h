@@ -14,7 +14,11 @@ class camera
     const char *Filename;
     i32 NumSamples = 10; // Count of random samples around each pixel.
     i32 MaxBounces = 10; // The Maximum number of bounces the rays are allowed to have.
+    
     f64 VerticalFOV = 90.0; // Vertical Field of View of the camera.
+    vec3d LookFrom = Vec3d(0, 0, -1); // Where the camera is Looking From.
+    vec3d LookAt = Vec3d(0, 0, 0); // Where the camera is Looking At.
+    vec3d WorldUp = Vec3d(0, 1, 0); // The Global Up Vector.
     
     void
     Render(const hittable &World)
@@ -57,6 +61,8 @@ class camera
     vec3d Pixel00;      // Location of the 0,0 Pixel in the upper left.
     vec3d PixelDeltaU;  // Offset to pixel to the right.
     vec3d PixelDeltaV;  // Offset to pixel to the left.
+    vec3d U, V, W;      // Camera Ortho-Normal Basis Vectors.
+    
     u8 *Data = nullptr;
     ppm PPMFile;
     
@@ -69,26 +75,31 @@ class camera
         this->ImageHeight = (i32)(this->ImageWidth / this->AspectRatio);
         this->ImageHeight = (this->ImageHeight < 1) ? 1 : this->ImageHeight;
         
-        this->Center = Vec3d(0, 0, 0);
+        this->Center = LookFrom;
         
         // Calculate Viewport Dimensions
-        f64 FocalLength = 1.0;
+        f64 FocalLength = (LookFrom - LookAt).Magnitude();
         f64 VerticalAngle = Deg2Rad(this->VerticalFOV);
         f64 h = tan(VerticalAngle*0.5);
         f64 ViewportHeight = 2.0*h*FocalLength;
         f64 ViewportWidth = ViewportHeight * ((f64)(this->ImageWidth)/this->ImageHeight);
         
+        // Calculating the Camera Basis Vectors.
+        this->W = Normalize(LookFrom - LookAt);
+        this->U = Normalize(Cross(this->WorldUp, this->W));
+        this->V = Cross(this->W, this->U);
+        
         // Calculate the vectors along the horizontal and down the vertical viewport
         // edges.
-        vec3d ViewportU = Vec3d(ViewportWidth, 0, 0);
-        vec3d ViewportV = Vec3d(0, -ViewportHeight, 0);
-        
+        vec3d ViewportU =  ViewportWidth * this->U;
+        vec3d ViewportV = -ViewportHeight * this->V;
+
         // Calculate the horizontal and vertical delta vectors from pixel to pixel
         this->PixelDeltaU = ViewportU / ImageWidth;
         this->PixelDeltaV = ViewportV / ImageHeight;
         
         // Calculate the location of the upper left pixel.
-        vec3d ViewportUpperLeft = Center - Vec3d(0, 0, FocalLength) - ViewportU/2 - ViewportV/2;
+        vec3d ViewportUpperLeft = Center - (FocalLength*this->W) - (ViewportU/2) - (ViewportV/2);
         
         // Pixel Center of the upper left pixel. which is our origin
         this->Pixel00 = ViewportUpperLeft + 0.5*(this->PixelDeltaU + this->PixelDeltaV);
