@@ -19,6 +19,10 @@ main()
     World.Add(make_shared<sphere>(Vec3d( 0.0, -100.5, -1.0), 100.0, material_ground));
     World.Add(make_shared<sphere>(Vec3d( 0.0,    0.0, -1.0),   0.5, material_center));
     World.Add(make_shared<sphere>(Vec3d(-1.0,    0.0, -1.0),   0.5, material_left));
+    // NOTE: Negative radius means Normal Vector is Inverted and instead of
+    // moving out of the surface, it moves into the surface towards the sphere
+    // radius.
+    World.Add(make_shared<sphere>(Vec3d(-1.0,    0.0, -1.0),   -0.4, material_left));
     World.Add(make_shared<sphere>(Vec3d( 1.0,    0.0, -1.0),   0.5, material_right));    
     
     camera Camera;
