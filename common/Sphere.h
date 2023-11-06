@@ -6,7 +6,10 @@
 class sphere : public hittable
 {
   public:
-    sphere(vec3d Center, f64 Radius) : center(Center), radius(Radius) {}
+    sphere(vec3d Center, f64 Radius, std::shared_ptr<material> Material)
+        : center(Center), radius(Radius), mat(Material)
+    {
+    }
     
     // Returns true if the generated ray hits the sphere.
     // (x−Cx)^2 + (y−Cy)^2 + (z−Cz)^2 = r^2
@@ -59,6 +62,7 @@ class sphere : public hittable
         // intersection quadratic eq.
         Record.t = Root;
         Record.P = Ray.At(Record.t);
+        Record.Material = mat;
         
         // This is a Unit Vector.
         vec3d OutwardNormal = ((Record.P - center) / radius);
@@ -71,6 +75,7 @@ class sphere : public hittable
   private:
     vec3d center;
     f64 radius;
+    std::shared_ptr<material> mat;
 };
 
 #define SPHERE_H

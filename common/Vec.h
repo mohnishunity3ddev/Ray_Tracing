@@ -78,6 +78,7 @@ struct vec3
     inline T Magnitude() const;
     inline T Dot(const vec3<T> &A);
     inline vec3<T> Cross(const vec3<T> &A);
+    inline b32 NearZero() const;
     
     static inline vec3<T> Rand01();
     static inline vec3<T> RandRange(T Min, T Max);
@@ -110,6 +111,7 @@ template <typename T, typename S> SHU_EXPORT vec3<T> operator*(S B, const vec3<T
 template <typename T, typename S> SHU_EXPORT vec3<T> operator*(const vec3<T> &A, S B);
 template <typename T> SHU_EXPORT vec3<T> operator*(T B, const vec3<T> &A);
 template <typename T> SHU_EXPORT vec3<T> operator*(const vec3<T>& A, T B);
+template <typename T> SHU_EXPORT vec3<T> operator*(const vec3<T>& A, const vec3<T>& B);
 template <typename T> SHU_EXPORT vec3<T> operator/(const vec3<T>& A, const vec3<T>& B);
 template <typename T> SHU_EXPORT vec3<T> operator/(const vec3<T>& A, T B);
 template <typename T> SHU_EXPORT vec3<T> operator/(const vec3<T>& A, const i32 B);
@@ -117,6 +119,7 @@ template <typename T> SHU_EXPORT T SqMagnitude(const vec3<T> &A);
 template <typename T> SHU_EXPORT T Magnitude(const vec3<T> &A);
 
 template <typename T> SHU_EXPORT vec3<T> Normalize(const vec3<T> &A);
+template <typename T> SHU_EXPORT vec3<T> Reflect(const vec3<T> &V, const vec3<T> &N);
 
 template <typename T> internal T DotStatic(const vec3<T>& A, const vec3<T>& B);
 
@@ -471,6 +474,40 @@ vec3<T>::Cross(const vec3<T> &A)
     return Result;
 }
 
+// Returns true is the vector is zero or close to zero in all directions
+template <typename T>
+b32
+vec3<T>::NearZero() const
+{
+    auto S = 1e-8;
+    b32 Result = ((fabs(this->x) < S) && 
+                  (fabs(this->y) < S) && 
+                  (fabs(this->z) < S));
+    
+    return Result;
+}
+
+template <typename T>
+vec3<T>
+Reflect(const vec3<T> &V, const vec3<T> &N)
+{
+    vec3<T> Result;
+    
+    T d = Dot(V, N);
+    // if V is moving IN to the surface with Normal N
+    if(d < (T)0)
+    {
+        Result = V - 2*Dot(V, N)*N;
+    }
+    // if V is moving OUT of the surface with Normal N
+    else if(d > (T)0)
+    {
+        Result = 2*Dot(V, N)*N - V;
+    }
+    
+    return Result;
+}
+
 template <typename T>
 vec3<T>
 operator+(const vec3<T>& A, const vec3<T>& B)
@@ -545,6 +582,19 @@ operator*(const vec3<T>& A, T B)
     Result.x = B * A.x;
     Result.y = B * A.y;
     Result.z = B * A.z;
+    
+    return Result;
+}
+
+template <typename T>
+vec3<T>
+operator*(const vec3<T> &A, const vec3<T> &B)
+{
+    vec3<T> Result;
+    
+    Result.x = B.x*A.x;
+    Result.y = B.y*A.y;
+    Result.z = B.z*A.z;
     
     return Result;
 }
@@ -685,7 +735,7 @@ vec3<T>::One()
     Result.x = (T)1.0;
     Result.y = (T)1.0;
     Result.z = (T)1.0;
-
+    
     return Result;
 }
 
@@ -766,7 +816,7 @@ vec3<T>::RandomOnHemisphere(const vec3<T> &Normal)
     {
         Result = -Result;
     }
-
+    
     return Result;
 }
 

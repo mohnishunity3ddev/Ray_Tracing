@@ -3,14 +3,16 @@
 #include "Ray.h"
 #include "Interval.h"
 
+struct material;
+
 class hit_record
 {
   public:
     // Intersection point on the surface where the ray hit
     vec3d P;
     vec3d Normal;
-    // the t in ray's eq: A + tB
-    f64 t;
+    std::shared_ptr<material> Material; // The material of the hit object.
+    f64 t; // the t in ray's eq: A + tB
     b32 FrontFace;
     
     // NOTE: Sets the hit record normal vector
