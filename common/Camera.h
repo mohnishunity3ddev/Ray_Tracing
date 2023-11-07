@@ -9,7 +9,6 @@
 class camera
 {
   public:
-    u32 HitCount = 0;
     f64 AspectRatio = 1.0;
     i32 ImageWidth = 100;
     const char *Filename;
@@ -204,7 +203,6 @@ class camera
         f64 ShadowAcneCorrection = 0.001;
         if(World.Hit(Ray, interval(ShadowAcneCorrection, Infinity), Record))
         {
-            ++HitCount;
             ray Scattered;
             color Attenuation;
             
