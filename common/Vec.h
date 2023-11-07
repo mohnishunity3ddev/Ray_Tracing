@@ -84,7 +84,8 @@ struct vec3
     static inline vec3<T> RandRange(T Min, T Max);
     static inline vec3<T> One();
     static inline vec3<T> RandomUnitVector();
-    static inline vec3<T> RandomOnHemisphere(const vec3<T> &Normal);
+    static inline vec3<T> RandomInUnitHemisphere(const vec3<T> &Normal);
+    static inline vec3<T> RandomInUnitDisk();
 };
 typedef vec3<i32> vec3i;
 typedef vec3<f32> vec3f;
@@ -814,7 +815,7 @@ vec3<T>::RandomInUnitSphere()
 }
 
 template <typename T>
-vec3<T>
+inline vec3<T>
 vec3<T>::RandomUnitVector()
 {
     vec3<T> Result = RandomInUnitSphere();
@@ -824,14 +825,34 @@ vec3<T>::RandomUnitVector()
 }
 
 template <typename T>
-vec3<T>
-vec3<T>::RandomOnHemisphere(const vec3<T> &Normal)
+inline vec3<T>
+vec3<T>::RandomInUnitHemisphere(const vec3<T> &Normal)
 {
     vec3<T> Result = RandomUnitVector();
     T DotP = DotStatic(Result, Normal);
     if(DotP < (T)0)
     {
         Result = -Result;
+    }
+    
+    return Result;
+}
+
+template <typename T>
+inline vec3<T>
+vec3<T>::RandomInUnitDisk()
+{
+    vec3<T> Result;
+    while(true)
+    {
+        Result.x = ::RandRange((T)-1, (T)1);
+        Result.y = ::RandRange((T)-1, (T)1);
+        Result.z = 0;
+
+        if(Result.SqMagnitude() < 1.)
+        {
+            break;
+        }
     }
     
     return Result;

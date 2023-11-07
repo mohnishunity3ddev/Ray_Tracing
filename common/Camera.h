@@ -9,6 +9,7 @@
 class camera
 {
   public:
+    u32 HitCount = 0;
     f64 AspectRatio = 1.0;
     i32 ImageWidth = 100;
     const char *Filename;
@@ -19,6 +20,11 @@ class camera
     vec3d LookFrom = Vec3d(0, 0, -1); // Where the camera is Looking From.
     vec3d LookAt = Vec3d(0, 0, 0); // Where the camera is Looking At.
     vec3d WorldUp = Vec3d(0, 1, 0); // The Global Up Vector.
+    
+    // NOTE: Depth of Field Parameters
+    // This is how we are handling depth of field. 
+    f64 DefocusAngle = 0;
+    f64 FocusDistance = 10;
     
     void
     Render(const hittable &World)
@@ -62,7 +68,9 @@ class camera
     vec3d PixelDeltaU;  // Offset to pixel to the right.
     vec3d PixelDeltaV;  // Offset to pixel to the left.
     vec3d U, V, W;      // Camera Ortho-Normal Basis Vectors.
-    
+    vec3d DefocusDiskU;
+    vec3d DefocusDiskV;
+
     u8 *Data = nullptr;
     ppm PPMFile;
     
@@ -78,10 +86,11 @@ class camera
         this->Center = LookFrom;
         
         // Calculate Viewport Dimensions
-        f64 FocalLength = (LookFrom - LookAt).Magnitude();
+        // FocalLength is distance between the camera center and the image plane.
         f64 VerticalAngle = Deg2Rad(this->VerticalFOV);
         f64 h = tan(VerticalAngle*0.5);
-        f64 ViewportHeight = 2.0*h*FocalLength;
+
+        f64 ViewportHeight = (2.0*h)*(this->FocusDistance);
         f64 ViewportWidth = ViewportHeight * ((f64)(this->ImageWidth)/this->ImageHeight);
         
         // Calculating the Camera Basis Vectors.
@@ -93,16 +102,22 @@ class camera
         // edges.
         vec3d ViewportU =  ViewportWidth * this->U;
         vec3d ViewportV = -ViewportHeight * this->V;
-
-        // Calculate the horizontal and vertical delta vectors from pixel to pixel
-        this->PixelDeltaU = ViewportU / ImageWidth;
-        this->PixelDeltaV = ViewportV / ImageHeight;
         
-        // Calculate the location of the upper left pixel.
-        vec3d ViewportUpperLeft = Center - (FocalLength*this->W) - (ViewportU/2) - (ViewportV/2);
+        // Calculate the horizontal and vertical delta vectors from pixel to pixel
+        this->PixelDeltaU = ViewportU / this->ImageWidth;
+        this->PixelDeltaV = ViewportV / this->ImageHeight;
+
+        // NOTE: Calculate the location of the upper left pixel. Sets the image
+        // plane at the focus distance also.
+        vec3d ViewportUpperLeft = Center - (this->FocusDistance*this->W) - (ViewportU/2) - (ViewportV/2);
         
         // Pixel Center of the upper left pixel. which is our origin
         this->Pixel00 = ViewportUpperLeft + 0.5*(this->PixelDeltaU + this->PixelDeltaV);
+        
+        // Calculate the camera defocus disk basis vectors.
+        f64 DefocusRadius = this->FocusDistance*tan(Deg2Rad(0.5*this->DefocusAngle));
+        this->DefocusDiskU = this->U * DefocusRadius;
+        this->DefocusDiskV = this->V * DefocusRadius;
         
         u64 RequiredSize = sizeof(u8)*this->ImageHeight*this->ImageWidth*3;
         this->Data = (u8 *)malloc(RequiredSize);
@@ -121,13 +136,16 @@ class camera
     ray
     GetRandomRayAround(i32 X, i32 Y) const
     {
+        // NOTE: Get a randomly-sampled camera ray for the pixel at location
+        // i,j, originating from the camera defocus disk.
+        
         vec3d PixelCenter = this->Pixel00 + (X*this->PixelDeltaU) + (Y*this->PixelDeltaV);
         
         // Random Position inside the Pixel Square
         vec3d PixelSample = PixelCenter + PixelSampleSquare();
         
-        vec3d RayOrigin = this->Center;
-        vec3d RayDirection = PixelSample - this->Center;
+        vec3d RayOrigin = (this->DefocusAngle <= 0) ? this->Center : DefocusDiskSample();
+        vec3d RayDirection = PixelSample - RayOrigin;
         
         ray Ray(RayOrigin, RayDirection);
         return Ray;
@@ -144,10 +162,20 @@ class camera
         
         return Result;
     }
+
+    vec3d
+    DefocusDiskSample() const
+    {
+        // NOTE: Returns a random point in the camera defocus disk.
+        vec3d P = vec3d::RandomInUnitDisk();
+        vec3d Result = this->Center + (P.x*this->DefocusDiskU + P.y*this->DefocusDiskV);
+        
+        return Result;
+    }
     
     
     color
-    RayColor(const ray &Ray, i32 BounceCount, const hittable &World) const
+    RayColor(const ray &Ray, i32 BounceCount, const hittable &World) 
     {
         // Render the "Hit" Object
         hit_record Record;
@@ -176,9 +204,10 @@ class camera
         f64 ShadowAcneCorrection = 0.001;
         if(World.Hit(Ray, interval(ShadowAcneCorrection, Infinity), Record))
         {
+            ++HitCount;
             ray Scattered;
             color Attenuation;
-
+            
             color Result = Color(0, 0, 0);
             if(Record.Material->Scatter(Ray, Record, Attenuation, Scattered))
             {
