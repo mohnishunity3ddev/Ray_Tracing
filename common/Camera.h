@@ -25,6 +25,13 @@ class camera
     f64 DefocusAngle = 0;
     f64 FocusDistance = 10;
     
+    // NOTE: Motion Blur
+    // A real world camera opens the shutter for a specificn period of time. It
+    // takes in all the light in this interval and averages it out and so if the
+    // objects are moving, we see some blur.
+    f64 ShutterOpenTime = 0.;
+    f64 ShutterCloseTime = 0.;
+    
     void
     Render(const hittable &World)
     {
@@ -69,7 +76,7 @@ class camera
     vec3d U, V, W;      // Camera Ortho-Normal Basis Vectors.
     vec3d DefocusDiskU;
     vec3d DefocusDiskV;
-
+    
     u8 *Data = nullptr;
     ppm PPMFile;
     
@@ -88,7 +95,7 @@ class camera
         // FocalLength is distance between the camera center and the image plane.
         f64 VerticalAngle = Deg2Rad(this->VerticalFOV);
         f64 h = tan(VerticalAngle*0.5);
-
+        
         f64 ViewportHeight = (2.0*h)*(this->FocusDistance);
         f64 ViewportWidth = ViewportHeight * ((f64)(this->ImageWidth)/this->ImageHeight);
         
@@ -105,7 +112,7 @@ class camera
         // Calculate the horizontal and vertical delta vectors from pixel to pixel
         this->PixelDeltaU = ViewportU / this->ImageWidth;
         this->PixelDeltaV = ViewportV / this->ImageHeight;
-
+        
         // NOTE: Calculate the location of the upper left pixel. Sets the image
         // plane at the focus distance also.
         vec3d ViewportUpperLeft = Center - (this->FocusDistance*this->W) - (ViewportU/2) - (ViewportV/2);
@@ -146,7 +153,11 @@ class camera
         vec3d RayOrigin = (this->DefocusAngle <= 0) ? this->Center : DefocusDiskSample();
         vec3d RayDirection = PixelSample - RayOrigin;
         
-        ray Ray(RayOrigin, RayDirection);
+        // NOTE: The way we do motion blur, is that we select a single ray in
+        // random times in the interval of the time when the shutter is open.
+        f64 RayTime = RandRange(ShutterOpenTime, ShutterCloseTime);
+        
+        ray Ray = ray(RayOrigin, RayDirection, RayTime);
         return Ray;
     }
     
@@ -161,7 +172,7 @@ class camera
         
         return Result;
     }
-
+    
     vec3d
     DefocusDiskSample() const
     {

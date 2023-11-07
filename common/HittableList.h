@@ -20,7 +20,7 @@ class hittable_list : public hittable
         Objects.push_back(Object);
     }
     
-    bool
+    b32
     Hit(const ray &Ray, const interval &Interval, hit_record &Record) const override
     {
         hit_record TempRecord;

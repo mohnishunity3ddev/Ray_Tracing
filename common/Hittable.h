@@ -32,8 +32,8 @@ class hittable
 {
   public:
     virtual ~hittable() = default;
-    virtual bool Hit(const ray &Ray, const interval &Interval,
-                     hit_record &Record) const = 0;
+    virtual b32 Hit(const ray &Ray, const interval &Interval,
+                    hit_record &Record) const = 0;
 };
 
 #define HITTABLE_H

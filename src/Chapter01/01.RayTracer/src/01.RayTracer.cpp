@@ -3,6 +3,7 @@
 
 #include <HittableList.h>
 #include <Sphere.h>
+#include <MovingSphere.h>
 #include <Camera.h>
 
 int
@@ -10,7 +11,7 @@ main()
 {
     // World.
     hittable_list World;
-
+    
     auto GroundMaterial = std::make_shared<lambertian>(Color(0.5, 0.5, 0.5));
     World.Add(std::make_shared<sphere>(Vec3d(0, -1000, 0), 1000, GroundMaterial));
     
@@ -28,15 +29,20 @@ main()
                 if (ChooseMaterial < 0.8)
                 {
                     // diffuse
-                    auto albedo = color::Rand01() * color::Rand01();
+                    vec3d albedo = color::Rand01() * color::Rand01();
                     SphereMaterial = std::make_shared<lambertian>(albedo);
-                    World.Add(std::make_shared<sphere>(Center, 0.2, SphereMaterial));
+                    
+                    // Where the sphere goes at time t1, since it is moving.
+                    vec3d RandomHalfY = Vec3d(0, RandRange(0, 0.5), 0);
+                    vec3d Center1 = Center + RandomHalfY;
+                    moving_sphere MovingSphere = moving_sphere(Center, Center1, 0, 1, 0.2, SphereMaterial);
+                    World.Add(std::make_shared<moving_sphere>(MovingSphere));
                 }
                 else if (ChooseMaterial < 0.95)
                 {
                     // metal
-                    auto albedo = color::RandRange(0.5, 1);
-                    auto fuzz = RandRange(0, 0.5);
+                    vec3d albedo = color::RandRange(0.5, 1);
+                    f64 fuzz = RandRange(0, 0.5);
                     SphereMaterial = std::make_shared<metal>(albedo, fuzz);
                     World.Add(std::make_shared<sphere>(Center, 0.2, SphereMaterial));
                 }
@@ -61,8 +67,8 @@ main()
     
     camera Camera;
     Camera.AspectRatio = 16.0/9.0;
-    Camera.ImageWidth = 1200;
-    Camera.Filename = "FinalRender_RayTracingInAWeekend.ppm";
+    Camera.ImageWidth = 1920;
+    Camera.Filename = "01_MotionBlur.ppm";
     Camera.NumSamples = 500;
     Camera.MaxBounces = 50;
     
@@ -95,8 +101,15 @@ main()
     // objects close to this distance will be focused on and hence wont be
     // blurred.
     Camera.FocusDistance = 10.0;
-    
+
+    // NOTE: Motion Blur Parameters
+    // This is the time interval when the shutter of the virtual camera is open.
+    Camera.ShutterOpenTime = 0.;
+    Camera.ShutterCloseTime = 1.;
+
+
     Camera.Render(World);
+
     
     return 0;
 }

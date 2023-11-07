@@ -46,7 +46,7 @@ class lambertian : public material
             ScatteredDirection = Record.Normal;
         }
         
-        ScatteredRay = ray(Record.P, ScatteredDirection);
+        ScatteredRay = ray(Record.P, ScatteredDirection, RayIn.Time());
         Attenuation = albedo;
         return true;
     }
@@ -70,7 +70,7 @@ class metal : public material
     {
         vec3d InDir = Normalize(RayIn.Direction());
         vec3d ReflectedRay = Reflect(InDir, Record.Normal);
-
+        
         vec3d FuzzVector = fuzz*(vec3d::RandomUnitVector());
         
         // The idea is that basically wherever the reflected ray ends up, we
@@ -78,7 +78,7 @@ class metal : public material
         // reflected ray gets a different endpoint on the surface of the sphere.
         // If the fuzz factor is more, then radius of that sphere will be more
         // which would increase the haziness/fuzziness of the reflections.
-        ScatteredRay = ray(Record.P, ReflectedRay + FuzzVector);
+        ScatteredRay = ray(Record.P, ReflectedRay + FuzzVector, RayIn.Time());
         
         Attenuation = albedo;
         
@@ -88,7 +88,7 @@ class metal : public material
   
   private:
     color albedo;
-
+    
     // NOTE: To make the reflections fuzzy or a little bit hazy.
     // The more this fuzz factor, the more distorted/imperfect the reflected
     // vector is
@@ -106,15 +106,15 @@ class dielectric : public material
     {
         Attenuation = Color(1., 1., 1.);
         f64 RefractionRatio = Record.FrontFace ? (1./indexOfRefraction) : indexOfRefraction;
-
+        
         vec3d UnitDirection = Normalize(RayIn.Direction());
         f64 CosTheta = MIN(Dot(-UnitDirection, Record.Normal), 1.);
         f64 SinTheta = sqrt(1. - CosTheta*CosTheta);
-
+        
         // NOTE: If this is > 1, then, this would invalidate snell's law.
         // SinTheta cannot be greater than 1.
         b32 TotalInternalReflection = (RefractionRatio*SinTheta > 1.);
-
+        
         vec3d Direction;
         if(TotalInternalReflection || (Reflectance(CosTheta, RefractionRatio) > Rand01()))
         {
@@ -124,15 +124,15 @@ class dielectric : public material
         {
             Direction = Refract(UnitDirection, Record.Normal, RefractionRatio);
         }
-        
-        ScatteredRay = ray(Record.P, Direction);
+
+        ScatteredRay = ray(Record.P, Direction, RayIn.Time());
         
         return true;
     }
   
   private:
     f64 indexOfRefraction;
-
+    
     // NOTE: Every glass material has varied reflectance based on the angle of
     // incidence, how to get the reflectance is an ugly formula, but we can use
     // schlick approcimation here.
