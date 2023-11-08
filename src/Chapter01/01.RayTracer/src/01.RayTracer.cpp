@@ -5,6 +5,7 @@
 #include <Sphere.h>
 #include <MovingSphere.h>
 #include <Camera.h>
+#include <CheckerTexture.h>
 
 int
 main()
@@ -12,7 +13,9 @@ main()
     // World.
     hittable_list World;
     
-    auto GroundMaterial = std::make_shared<lambertian>(Color(0.5, 0.5, 0.5));
+    auto CheckerTex = std::make_shared<checker_texture>(Color(0.2, 0.3, 0.1),
+                                                        Color(0.9, 0.9, 0.9));
+    auto GroundMaterial = std::make_shared<lambertian>(CheckerTex);
     World.Add(std::make_shared<sphere>(Vec3d(0, -1000, 0), 1000, GroundMaterial));
     
     for (i32 X = -11; X < 11; X++)
@@ -101,15 +104,15 @@ main()
     // objects close to this distance will be focused on and hence wont be
     // blurred.
     Camera.FocusDistance = 10.0;
-
+    
     // NOTE: Motion Blur Parameters
     // This is the time interval when the shutter of the virtual camera is open.
     Camera.ShutterOpenTime = 0.;
     Camera.ShutterCloseTime = 1.;
-
-
+    
+    
     Camera.Render(World);
-
+    
     
     return 0;
 }

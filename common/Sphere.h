@@ -67,6 +67,9 @@ class sphere : public hittable
         // This is a Unit Vector.
         vec3d OutwardNormal = ((Record.P - center) / radius);
         Record.set_face_normal(Ray, OutwardNormal);
+
+        // NOTE: Update the UV Texture Coordinates.
+        GetSphereUV(OutwardNormal, Record.U, Record.V);
         
         return true;
     }
@@ -83,6 +86,32 @@ class sphere : public hittable
     vec3d center;
     f64 radius;
     std::shared_ptr<material> mat;
+    
+    static void
+    GetSphereUV(const vec3d &P, f64 &U, f64 &V)
+    {
+        // NOTE: This Angle returned should be measured from -Y Axis. Therefore,
+        // a point like (0, -1, 0) should return Theta as 0.
+        f64 Theta = acos(-P.y);
+        
+        // IMPORTANT: NOTE:
+        // In a sphere, if P = (-1, 0, 0) then u = 0
+        // In a sphere, if P = ( 1, 0, 0) then u = 0.5
+        // Because we are measuring the angle from -X axis(azimuthal angle in a
+        // sphere). the entire u coordinate as it foes from 0-1 wraps the sphere
+        // as the azimuthal angle goes from 0 to 2*pi as measured from -X.
+        //
+        // atan2 returns the angle 0,pi in the first and second coordinate in
+        // the basis system where X is going right and y is going up. and it
+        // measures the angle from the +X Axis. So a point like (-1, 0, 1) will
+        // be in the Second Quadrant as far as atan2 is concerned and return
+        // 0.75pi We want it to return 0.25pi according to our requirements
+        // here.
+        f64 Phi = atan2(-P.z, P.x) + pi;
+        
+        U = Phi / (2 * pi);
+        V = Theta / pi;
+    }
 };
 
 #define SPHERE_H

@@ -5,6 +5,7 @@
 #include "Hittable.h"
 #include "Color.h"
 #include "Vec.h"
+#include "Texture.h"
 
 // NOTE: Material class for different kinds of materials in the scene.
 // It has two jobs:
@@ -26,7 +27,9 @@ class material
 class lambertian : public material
 {
   public:
-    lambertian(const color &A) : albedo(A) {}
+    lambertian(const color &Color) : albedo(std::make_shared<solid_color>(Color)) {}
+    lambertian(const std::shared_ptr<texture> Tex) : albedo(Tex) {}
+    
     
     b32
     Scatter(const ray &RayIn, const hit_record &Record, color &Attenuation,
@@ -47,12 +50,12 @@ class lambertian : public material
         }
         
         ScatteredRay = ray(Record.P, ScatteredDirection, RayIn.Time());
-        Attenuation = albedo;
+        Attenuation = albedo->Value(Record.U, Record.V, Record.P);
         return true;
     }
   
   private:
-    color albedo;
+    std::shared_ptr<texture> albedo;
 };
 
 // Metals are supposed to Reflect the incident ray not scatter it
