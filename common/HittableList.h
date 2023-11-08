@@ -30,6 +30,14 @@ class hittable_list : public hittable
         
         for(const auto &Object : Objects)
         {
+            // NOTE:This variable is named ClosestSoFar because if suppose we
+            // hit an object in the world/list, The ClosestSoFar is set to the
+            // 't' of its surface point. The next we call hit we set the max of
+            // the interval to the closestSoFar. If this method returns true, it
+            // means the object is closer to the ray origin than this one
+            // becausecloser objects will hit in this interval. so when this
+            // second object gets hit, we again set the interval max to this
+            // object's surface point 't'.
             if(Object->Hit(Ray, interval(Interval.Min, ClosestSoFar), TempRecord))
             {
                 HitAnything = true; 

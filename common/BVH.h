@@ -34,7 +34,7 @@ BoxCompare(const std::shared_ptr<hittable> A,
            const std::shared_ptr<hittable> B,
            i32 Axis)
 {
-    b32 Result;
+    b32 Result = false;
     
     aabb BoxA;
     aabb BoxB;
@@ -42,7 +42,8 @@ BoxCompare(const std::shared_ptr<hittable> A,
     if(!A->BoundingBox(0, 0, BoxA) || 
        !B->BoundingBox(0, 0, BoxB))
     {
-        printf("There was an error here!\n");
+        printf("There was an error here in computing bounding boxes!\n");
+        ASSERT(0);
         Result = false;
     }
     else
@@ -143,7 +144,7 @@ b32
 bvh_node::Hit(const ray &Ray, const interval &Interval,
               hit_record &Record) const
 {
-    b32 Result;
+    b32 Result = false;
     
     // Check whether the bounding box of this node is hit
     if(!this->box.Hit(Ray, Interval.Min, Interval.Max))
@@ -152,17 +153,40 @@ bvh_node::Hit(const ray &Ray, const interval &Interval,
     }
     else
     {
-        // If the bounding box for this bvh is hit, check the child nodes of
-        // this node to check whether they hit.
-        b32 HitLeft = this->left->Hit(Ray, Interval, Record);
+        // NOTE: If the bounding box for this bvh is hit, check the child nodes
+        // of this node to check whether they hit.
+        hit_record LeftRecord, RightRecord;
+        
+        // These Left and Right Nodes can be bvh's or spheres or moving spheres.
+        b32 HitLeft = this->left->Hit(Ray, Interval, LeftRecord);
         
         // NOTE: Both the child objects's bounding boxes can overlap
-        interval RightInterval;
-        RightInterval.Min = Interval.Min;
-        RightInterval.Max = HitLeft ? Record.t : Interval.Max;
-        b32 HitRight = this->right->Hit(Ray, RightInterval, Record);
+        b32 HitRight = this->right->Hit(Ray, Interval, RightRecord);
         
-        Result = HitLeft || HitRight;
+        // NOTE: If both children are hit by the ray
+        if(HitLeft && HitRight)
+        {
+            // NOTE: We return the closer Object's surface point 't'
+            if(LeftRecord.t < RightRecord.t)
+            {
+                Record = LeftRecord;
+            }
+            else
+            {
+                Record = RightRecord;
+            }
+            Result = true;
+        }
+        else if(HitLeft)
+        {
+            Record = LeftRecord;
+            Result = true;
+        }
+        else if(HitRight)
+        {
+            Record = RightRecord;
+            Result = true;
+        }
     }
     
     return Result;

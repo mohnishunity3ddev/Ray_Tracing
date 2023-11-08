@@ -11,7 +11,7 @@ main()
 {
     // World.
     hittable_list World;
-
+    
     auto GroundMaterial = std::make_shared<lambertian>(Color(0.5, 0.5, 0.5));
     World.Add(std::make_shared<sphere>(Vec3d(0, -1000, 0), 1000, GroundMaterial));
     
