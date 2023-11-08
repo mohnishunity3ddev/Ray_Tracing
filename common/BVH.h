@@ -42,8 +42,7 @@ BoxCompare(const std::shared_ptr<hittable> A,
     if(!A->BoundingBox(0, 0, BoxA) || 
        !B->BoundingBox(0, 0, BoxB))
     {
-        printf("There was an error here in computing bounding boxes!\n");
-        ASSERT(0);
+        ASSERT(!"There was an error here in computing bounding boxes!\n");
         Result = false;
     }
     else
@@ -125,8 +124,7 @@ bvh_node::bvh_node(const std::vector<std::shared_ptr<hittable>> &SrcObjects,
     if(!this->left->BoundingBox(Time0, Time1, BoxLeft) ||
         this->right->BoundingBox(Time0, Time1, BoxRight))
     {
-        printf("No bounding box in bvh_node constructor.\n");
-        ASSERT(0);
+        ASSERT(!"No bounding box in bvh_node constructor.\n");
     }
     
     // NOTE: Parent Box contains both the child boxes.
