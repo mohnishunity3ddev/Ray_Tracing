@@ -19,7 +19,7 @@ class interval
         b32 Result = ((X > Min) && (X < Max));
         return Result;
     }
-
+    
     f64 Clamp(f64 X) const
     {
         if(X < Min) return Min;

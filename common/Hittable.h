@@ -2,6 +2,7 @@
 #include "defines.h"
 #include "Ray.h"
 #include "Interval.h"
+#include "AABB.h"
 
 struct material;
 
@@ -34,6 +35,7 @@ class hittable
     virtual ~hittable() = default;
     virtual b32 Hit(const ray &Ray, const interval &Interval,
                     hit_record &Record) const = 0;
+    virtual b32 BoundingBox(f64 Time0, f64 Time1, aabb &OutputBox) const = 0;
 };
 
 #define HITTABLE_H

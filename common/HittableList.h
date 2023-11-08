@@ -1,6 +1,7 @@
 #if !defined(HITTABLE_LIST_H)
 #include "defines.h"
 #include "Hittable.h"
+#include "AABB.h"
 
 #include <memory>
 #include <vector>
@@ -38,6 +39,36 @@ class hittable_list : public hittable
         }
         
         return HitAnything;
+    }
+    
+    b32
+    BoundingBox(f64 Time0, f64 Time1, aabb &OutputBox) const override
+    {
+        b32 Result = true;
+        if(Objects.empty()) 
+        {
+            Result = false;
+        }
+        else
+        {
+            aabb TempBox;
+            b32 FirstBox = true;
+            
+            for(const auto &Object : Objects)
+            {
+                if(!Object->BoundingBox(Time0, Time1, TempBox))
+                {
+                    Result = false;
+                    break;
+                }
+
+                TempBox = FirstBox ? TempBox
+                                   : aabb::SurroundingBox(TempBox, OutputBox);
+                FirstBox = false;
+            }
+        }
+        
+        return Result;
     }
 };
 

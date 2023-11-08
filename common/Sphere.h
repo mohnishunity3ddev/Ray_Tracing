@@ -70,7 +70,14 @@ class sphere : public hittable
         
         return true;
     }
-  
+    
+    b32
+    BoundingBox(f64 Time0, f64 Time1, aabb &OutputBox) const override
+    {
+        OutputBox = aabb(center - Vec3d(radius), 
+                         center + Vec3d(radius));
+        return true;
+    }
   
   private:
     vec3d center;

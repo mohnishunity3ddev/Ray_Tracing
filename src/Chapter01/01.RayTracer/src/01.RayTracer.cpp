@@ -11,7 +11,7 @@ main()
 {
     // World.
     hittable_list World;
-    
+
     auto GroundMaterial = std::make_shared<lambertian>(Color(0.5, 0.5, 0.5));
     World.Add(std::make_shared<sphere>(Vec3d(0, -1000, 0), 1000, GroundMaterial));
     
@@ -67,9 +67,9 @@ main()
     
     camera Camera;
     Camera.AspectRatio = 16.0/9.0;
-    Camera.ImageWidth = 1920;
+    Camera.ImageWidth = 400;
     Camera.Filename = "01_MotionBlur.ppm";
-    Camera.NumSamples = 500;
+    Camera.NumSamples = 100;
     Camera.MaxBounces = 50;
     
     // NOTE: Decrease this FOV Vertical to zoom in.
@@ -85,7 +85,7 @@ main()
     vec3d FocusAt = Vec3d(0, 0, -1);
     f64 Dist = (FocusAt - Camera.LookFrom).Magnitude();
 #endif
-
+    
     // NOTE: Depth of Field Parameters
     // This is how we are handling depth of field.
     // When objects are far from the focal distance then rays emanating from the

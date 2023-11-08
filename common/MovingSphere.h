@@ -76,6 +76,18 @@ class moving_sphere : public hittable
         
         return true;
     }
+
+    b32
+    BoundingBox(f64 Time0, f64 Time1, aabb &OutputBox) const override
+    {
+        aabb Box0 = aabb(Center(Time0) - Vec3d(radius), 
+                         Center(Time0) + Vec3d(radius));
+        aabb Box1 = aabb(Center(Time1) - Vec3d(radius), 
+                         Center(Time1) + Vec3d(radius));
+
+        OutputBox = aabb::SurroundingBox(Box0, Box1);
+        return true;
+    }
     
     // NOTE: Where is the sphere located at the given time.
     vec3d

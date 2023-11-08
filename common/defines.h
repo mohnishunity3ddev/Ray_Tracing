@@ -76,6 +76,14 @@ Rand01Generic()
     return Result;
 }
 
+inline i32
+RandomRangeInt(i32 A, i32 B)
+{
+    i32 Result = static_cast<i32>(RandRange(A, B+1));
+    
+    return Result;
+}
+
 #define ABSOLUTE(Val) (Val) < 0 ? -(Val) : (Val)
 
 #define ASSERT(Expression)                                                     \
@@ -88,6 +96,15 @@ Rand01Generic()
 
 #define MAX(A, B) (A) > (B) ? A : B
 #define MIN(A, B) (A) < (B) ? A : B
+
+template<typename T>
+void
+Swap(T &A, T &B)
+{
+    T Temp = A;
+    A = B;
+    B = Temp;
+}
 
 #ifdef _MSC_VER
 #define SHU_EXPORT __declspec(dllexport)
