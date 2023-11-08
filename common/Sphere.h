@@ -69,7 +69,7 @@ class sphere : public hittable
         Record.set_face_normal(Ray, OutwardNormal);
 
         // NOTE: Update the UV Texture Coordinates.
-        GetSphereUV(OutwardNormal, Record.U, Record.V);
+        GetSphereUV(OutwardNormal, Record .U, Record.V);
         
         return true;
     }

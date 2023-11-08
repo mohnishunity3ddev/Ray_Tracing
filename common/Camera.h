@@ -9,28 +9,20 @@
 class camera
 {
   public:
-    f64 AspectRatio = 1.0;
     i32 ImageWidth = 100;
     const char *Filename;
     i32 NumSamples = 10; // Count of random samples around each pixel.
     i32 MaxBounces = 10; // The Maximum number of bounces the rays are allowed to have.
     
-    f64 VerticalFOV = 90.0; // Vertical Field of View of the camera.
-    vec3d LookFrom = Vec3d(0, 0, -1); // Where the camera is Looking From.
-    vec3d LookAt = Vec3d(0, 0, 0); // Where the camera is Looking At.
-    vec3d WorldUp = Vec3d(0, 1, 0); // The Global Up Vector.
     
-    // NOTE: Depth of Field Parameters
-    // This is how we are handling depth of field. 
-    f64 DefocusAngle = 0;
-    f64 FocusDistance = 10;
-    
-    // NOTE: Motion Blur
-    // A real world camera opens the shutter for a specificn period of time. It
-    // takes in all the light in this interval and averages it out and so if the
-    // objects are moving, we see some blur.
-    f64 ShutterOpenTime = 0.;
-    f64 ShutterCloseTime = 0.;
+    camera() {}
+    camera(vec3d lookFrom, vec3d lookAt, vec3d globalUpVec, f64 vFov,
+           i32 imageWidth, f64 aspectRatio, f64 defocusAngle, f64 DistToFocus,
+           f64 shutterOpenTime, f64 shutterCloseTime)
+        : LookFrom(lookFrom), LookAt(lookAt), WorldUp(globalUpVec),
+          VerticalFOV(vFov), ImageWidth(imageWidth), AspectRatio(aspectRatio),
+          DefocusAngle(defocusAngle), FocusDistance(DistToFocus),
+          ShutterOpenTime(shutterOpenTime), ShutterCloseTime(shutterCloseTime) {}   
     
     void
     Render(const hittable &World)
@@ -76,6 +68,25 @@ class camera
     vec3d U, V, W;      // Camera Ortho-Normal Basis Vectors.
     vec3d DefocusDiskU;
     vec3d DefocusDiskV;
+    
+    f64 AspectRatio = 1.0;
+    
+    f64 VerticalFOV = 90.0;           // Vertical Field of View of the camera.
+    vec3d LookFrom = Vec3d(0, 0, -1); // Where the camera is Looking From.
+    vec3d LookAt = Vec3d(0, 0, 0);    // Where the camera is Looking At.
+    vec3d WorldUp = Vec3d(0, 1, 0);   // The Global Up Vector.
+    
+    // NOTE: Depth of Field Parameters
+    // This is how we are handling depth of field.
+    f64 DefocusAngle = 0;
+    f64 FocusDistance = 10;
+    
+    // NOTE: Motion Blur
+    // A real world camera opens the shutter for a specificn period of time. It
+    // takes in all the light in this interval and averages it out and so if the
+    // objects are moving, we see some blur.
+    f64 ShutterOpenTime = 0.;
+    f64 ShutterCloseTime = 0.;
     
     u8 *Data = nullptr;
     ppm PPMFile;
