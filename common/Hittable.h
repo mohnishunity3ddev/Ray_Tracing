@@ -14,6 +14,7 @@ class hit_record
     vec3d Normal;
     std::shared_ptr<material> Material; // The material of the hit object.
     f64 t; // the t in ray's eq: A + tB
+    f64 U, V; // U and V surface coordinates of the ray-object hit point.
     b32 FrontFace;
     
     // NOTE: Sets the hit record normal vector
