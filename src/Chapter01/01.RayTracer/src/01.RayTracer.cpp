@@ -6,6 +6,8 @@
 #include <MovingSphere.h>
 #include <Camera.h>
 #include <CheckerTexture.h>
+#include <Perlin.h>
+#include <NoiseTexture.h>
 
 hittable_list
 RandomScene()
@@ -15,7 +17,7 @@ RandomScene()
     
     auto CheckerTex = std::make_shared<checker_texture>(Color(0.2, 0.3, 0.1),
                                                         Color(0.9, 0.9, 0.9));
-
+    
     auto GroundMaterial = std::make_shared<lambertian>(CheckerTex);
     Result.Add(std::make_shared<sphere>(Vec3d(0, -1000, 0), 1000, GroundMaterial));
     
@@ -85,6 +87,19 @@ TwoSpheres()
     return Result;
 }
 
+hittable_list
+TwoPerlinSpheres()
+{
+    hittable_list Result;
+    
+    auto PerlinTex = std::make_shared<noise_texture>();
+    
+    Result.Add(std::make_shared<sphere>(Vec3d(0,-1000,0), 1000, std::make_shared<lambertian>(PerlinTex)));
+    Result.Add(std::make_shared<sphere>(Vec3d(0, 2, 0), 2, std::make_shared<lambertian>(PerlinTex)));
+    
+    return Result;
+}
+
 int
 main()
 {
@@ -117,8 +132,8 @@ main()
     f64 ShutterCloseTime = 1.;
     
     f64 AspectRatio = 16./ 9.;
-
-    i32 WorldSelect = 2;
+    
+    i32 WorldSelect = 3;
     switch(WorldSelect)
     {
         case 1:
@@ -138,6 +153,14 @@ main()
             LookAt = Vec3d(0, 0, 0);
         } break;
         
+        case 3:
+        {
+            World = TwoPerlinSpheres();
+            VerticalFOV = 20;
+            LookFrom = Vec3d(13, 2, 3);
+            LookAt = Vec3d(0, 0, 0);
+        } break;
+        
         default: { }
     }
 
@@ -146,12 +169,12 @@ main()
     f64 Dist = (FocusAt - Camera.LookFrom).Magnitude();
 #endif
     
-    i32 ImageWidth = 1920;
+    i32 ImageWidth = 1200;
     camera Cam = camera(LookFrom, LookAt, Up, VerticalFOV, ImageWidth, AspectRatio, 
                         DefocusAngle, FocusDistance, ShutterOpenTime, ShutterCloseTime);
     Cam.Filename = "02_Checkered_Scene.ppm";
-    Cam.NumSamples = 500;
-    Cam.MaxBounces = 50;
+    Cam.NumSamples = 100;
+    Cam.MaxBounces = 10;
     Cam.Render(World);
     return 0;
 }

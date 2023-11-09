@@ -7,6 +7,7 @@
 class texture
 {
   public:
+    // NOTE: Color of the texture at UV coordinates and position.
     virtual color Value(f64 U, f64 V, const vec3d &P) const = 0;
 };
 

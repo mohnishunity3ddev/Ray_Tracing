@@ -13,7 +13,7 @@ class checker_texture : public texture
     checker_texture(color C1, color C2)
         : even(std::make_shared<solid_color>(C1)),
           odd(std::make_shared<solid_color>(C2)) {}
-
+    
     color
     Value(f64 U, f64 V, const vec3d &P) const override
     {
