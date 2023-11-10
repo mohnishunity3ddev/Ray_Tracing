@@ -30,10 +30,10 @@ class perlin
     f64
     Noise(const vec3d &P) const
     {
-        auto i = (i32)(4*P.x) & 0xFF;
-        auto j = (i32)(4*P.y) & 0xFF;
-        auto k = (i32)(4*P.z) & 0xFF;
-
+        auto i = ((i32)(4*P.x) & 0xFF);
+        auto j = ((i32)(4*P.y) & 0xFF);
+        auto k = ((i32)(4*P.z) & 0xFF);
+        
         // NOTE: ^ is XOR operation. if two bits are different then the result is 1
         f64 Result = randFloat[permX[i] ^ permY[j] ^ permZ[k]];
         return Result;
@@ -56,7 +56,7 @@ class perlin
         Permute(P, pointCount);
         return P;
     }
-
+    
     static void
     Permute(i32 *P, i32 N)
     {

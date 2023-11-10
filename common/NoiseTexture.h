@@ -15,6 +15,8 @@ class noise_texture : public texture
         color Result = Color(1, 1, 1)*noise.Noise(P);
         return Result;
     }
+
+    perlin PerlinNoise() { return noise; }
   
   private:
     perlin noise;

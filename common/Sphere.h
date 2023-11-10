@@ -62,7 +62,6 @@ class sphere : public hittable
         // intersection quadratic eq.
         Record.t = Root;
         Record.P = Ray.At(Record.t);
-        Record.Material = mat;
         
         // This is a Unit Vector.
         vec3d OutwardNormal = ((Record.P - center) / radius);
@@ -70,6 +69,7 @@ class sphere : public hittable
 
         // NOTE: Update the UV Texture Coordinates.
         GetSphereUV(OutwardNormal, Record .U, Record.V);
+        Record.Material = mat;
         
         return true;
     }
