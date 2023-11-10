@@ -33,6 +33,11 @@ class perlin
         f64 U = P.x - floor(P.x);
         f64 V = P.y - floor(P.y);
         f64 W = P.z - floor(P.z);
+
+        // NOTE: Hermitian Smoothing
+        U = U*U*(3 - 2*U);
+        V = V*V*(3 - 2*V);
+        W = W*W*(3 - 2*W);
         
         i32 I = (i32)(floor(P.x));
         i32 J = (i32)(floor(P.y));
