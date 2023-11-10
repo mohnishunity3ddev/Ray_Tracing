@@ -66,7 +66,7 @@ class sphere : public hittable
         // This is a Unit Vector.
         vec3d OutwardNormal = ((Record.P - center) / radius);
         Record.set_face_normal(Ray, OutwardNormal);
-
+        
         // NOTE: Update the UV Texture Coordinates.
         GetSphereUV(OutwardNormal, Record .U, Record.V);
         Record.Material = mat;
@@ -108,8 +108,11 @@ class sphere : public hittable
         // 0.75pi We want it to return 0.25pi according to our requirements
         // here.
         f64 Phi = atan2(-P.z, P.x) + pi;
-        
-        U = Phi / (2 * pi);
+
+        // The Azimuthal angle in the sphere goes in the XZ plane from 0 to 2*pi
+        U = Phi / (2*pi);
+        // Theta here is the polar angle which goes from -Y to Y. That is why
+        // the total is 0 to pi
         V = Theta / pi;
     }
 };

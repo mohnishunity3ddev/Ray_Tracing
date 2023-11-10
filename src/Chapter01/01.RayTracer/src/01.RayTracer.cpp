@@ -8,6 +8,7 @@
 #include <CheckerTexture.h>
 #include <Perlin.h>
 #include <NoiseTexture.h>
+#include <ImageTexture.h>
 
 hittable_list
 RandomScene()
@@ -88,13 +89,27 @@ TwoSpheres()
 }
 
 hittable_list
+EarthScene()
+{
+    hittable_list Result;
+    
+    auto EarthTex = std::make_shared<image_texture>("../images/earthmap.jpg");
+    auto EarthSurface = std::make_shared<lambertian>(EarthTex);
+    auto Globe = std::make_shared<sphere>(Vec3d(0, 0, 0), 2, EarthSurface);
+    
+    Result = hittable_list(Globe);
+    
+    return Result;
+}
+
+hittable_list
 TwoPerlinSpheres()
 {
     hittable_list Result;
     
     auto PerlinTex = std::make_shared<noise_texture>();
     
-    Result.Add(std::make_shared<sphere>(Vec3d(0,-1000,0), 1000, std::make_shared<lambertian>(PerlinTex)));
+    Result.Add(std::make_shared<sphere>(Vec3d(0, -1000, 0), 1000, std::make_shared<lambertian>(PerlinTex)));
     Result.Add(std::make_shared<sphere>(Vec3d(0, 2, 0), 2, std::make_shared<lambertian>(PerlinTex)));
     
     return Result;
@@ -131,7 +146,7 @@ main()
     f64 ShutterOpenTime = 0.;
     f64 ShutterCloseTime = 1.;
     
-    f64 AspectRatio = 16./ 9.;
+    f64 AspectRatio = (16.0 / 9.0);
     
     i32 WorldSelect = 3;
     switch(WorldSelect)
@@ -155,15 +170,25 @@ main()
         
         case 3:
         {
+            World = EarthScene();
+            VerticalFOV = 20;
+            LookFrom = Vec3d(0, 0, 12);
+            LookAt = Vec3d(0, 0, 0);
+            DefocusAngle = 0;
+        } break;
+        
+        case 4:
+        {
             World = TwoPerlinSpheres();
             VerticalFOV = 20;
             LookFrom = Vec3d(13, 2, 3);
             LookAt = Vec3d(0, 0, 0);
+        
         } break;
         
         default: { }
     }
-
+    
 #if 0
     vec3d FocusAt = Vec3d(0, 0, -1);
     f64 Dist = (FocusAt - Camera.LookFrom).Magnitude();
@@ -172,7 +197,7 @@ main()
     i32 ImageWidth = 1200;
     camera Cam = camera(LookFrom, LookAt, Up, VerticalFOV, ImageWidth, AspectRatio, 
                         DefocusAngle, FocusDistance, ShutterOpenTime, ShutterCloseTime);
-    Cam.Filename = "02_Checkered_Scene.ppm";
+    Cam.Filename = "03_Earth.ppm";
     Cam.NumSamples = 100;
     Cam.MaxBounces = 10;
     Cam.Render(World);

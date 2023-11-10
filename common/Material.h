@@ -30,7 +30,6 @@ class lambertian : public material
     lambertian(const color &Color) : albedo(std::make_shared<solid_color>(Color)) {}
     lambertian(const std::shared_ptr<texture> Tex) : albedo(Tex) {}
     
-    
     b32
     Scatter(const ray &RayIn, const hit_record &Record, color &Attenuation,
             ray &ScatteredRay) const override
@@ -51,6 +50,7 @@ class lambertian : public material
         
         ScatteredRay = ray(Record.P, ScatteredDirection, RayIn.Time());
         Attenuation = albedo->Value(Record.U, Record.V, Record.P);
+
         return true;
     }
   

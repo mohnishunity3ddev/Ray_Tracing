@@ -59,6 +59,9 @@ endif()
 # include_directories(external/assimp/include)
 # include_directories($<TARGET_FILE_DIR:assimp>/../include) # there is one config.h file which gets build in assimp's build directory by cmake.
 # include_directories(external/imgui)
+set(EXTERNAL_INCLUDE_DIR $ENV{CPP_LIBRARIES})
+include_directories(${EXTERNAL_INCLUDE_DIR}/stb)
+
 include_directories(common)
 
 # if(WIN32)

@@ -22,9 +22,17 @@ class interval
     
     f64 Clamp(f64 X) const
     {
-        if(X < Min) return Min;
-        if(X > Max) return Max;
-        return X;
+        f64 Result = X;
+        if(X < Min)
+        {
+            Result = Min;
+        }
+        else if(X > Max)
+        {
+            Result = Max;
+        }
+        
+        return Result;
     }
     
     static const interval empty, universe;
