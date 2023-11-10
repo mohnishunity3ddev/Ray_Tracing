@@ -13,7 +13,7 @@ class noise_texture : public texture
     color
     Value(f64 U, f64 V, const vec3d &P) const override
     {
-        color Result = Color(1, 1, 1)*noise.Noise(frequency*P);
+        color Result = 0.5*Color(1, 1, 1)*(1.0 + noise.Noise(frequency*P));
         return Result;
     }
     
