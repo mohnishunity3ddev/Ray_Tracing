@@ -107,7 +107,7 @@ TwoPerlinSpheres()
 {
     hittable_list Result;
     
-    auto PerlinTex = std::make_shared<noise_texture>();
+    auto PerlinTex = std::make_shared<noise_texture>(4.0);
     
     Result.Add(std::make_shared<sphere>(Vec3d(0, -1000, 0), 1000, std::make_shared<lambertian>(PerlinTex)));
     Result.Add(std::make_shared<sphere>(Vec3d(0, 2, 0), 2, std::make_shared<lambertian>(PerlinTex)));
@@ -183,7 +183,6 @@ main()
             VerticalFOV = 20;
             LookFrom = Vec3d(13, 2, 3);
             LookAt = Vec3d(0, 0, 0);
-        
         } break;
         
         default: { }
