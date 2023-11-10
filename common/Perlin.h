@@ -56,6 +56,26 @@ class perlin
         f64 Result = TrilinearInterp(C, U, V, W);
         return Result;
     }
+
+    // NOTE: Adding multiple perlin noise funtions on top of each other.
+    f64
+    Turbulence(const vec3d &P, i32 Depth = 7) const
+    {
+        f64 Accum = 0.;
+        vec3d TempP = P;
+        f64 Weight = 1.;
+        
+        for(i32 I = 0; I < Depth; ++I)
+        {
+            Accum += Weight*Noise(TempP);
+            Weight *= 0.5;
+            TempP *= 2;
+        }
+        
+        f64 Result = ABSOLUTE(Accum);
+        
+        return Result;
+    }
   
   private:
     static const i32 pointCount = 256;
