@@ -13,12 +13,18 @@ class noise_texture : public texture
     color
     Value(f64 U, f64 V, const vec3d &P) const override
     {
+        vec3d Freq = frequency*P;
+
 #define USE_TURBULENCE 1
+#define MARBLE_LIKE 1
 #if !USE_TURBULENCE
         color Result = 0.5*Color(1, 1, 1)*(1.0 + noise.Noise(frequency*P));
+#elif !MARBLE_LIKE
+        color Result = Color(1, 1, 1)*noise.Turbulence(frequency*P);
 #else
 
-        color Result = Color(1, 1, 1)*noise.Turbulence(frequency*P);
+        color Result = 0.5*Color(1, 1, 1)*
+                       (1.0+sin(Freq.z + 10.0*noise.Turbulence(Freq)));
 #endif
         
         return Result;
