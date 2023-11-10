@@ -148,7 +148,7 @@ main()
     
     f64 AspectRatio = (16.0 / 9.0);
     
-    i32 WorldSelect = 3;
+    i32 WorldSelect = 4;
     switch(WorldSelect)
     {
         case 1:
@@ -194,12 +194,12 @@ main()
     f64 Dist = (FocusAt - Camera.LookFrom).Magnitude();
 #endif
     
-    i32 ImageWidth = 1200;
+    i32 ImageWidth = 400;
     camera Cam = camera(LookFrom, LookAt, Up, VerticalFOV, ImageWidth, AspectRatio, 
                         DefocusAngle, FocusDistance, ShutterOpenTime, ShutterCloseTime);
     Cam.Filename = "03_Earth.ppm";
     Cam.NumSamples = 100;
-    Cam.MaxBounces = 10;
+    Cam.MaxBounces = 50;
     Cam.Render(World);
     return 0;
 }
