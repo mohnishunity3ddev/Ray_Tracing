@@ -16,6 +16,13 @@
 class material
 {
   public:
+    virtual color
+    Emitted(f64 U, f64 V, const vec3d &P) const
+    {
+        color Result = Color(0, 0, 0);
+        return Result;
+    }
+    
     virtual ~material() = default;
     
     // NOTE: Produces a scattered ray based on the incident ray. This function
