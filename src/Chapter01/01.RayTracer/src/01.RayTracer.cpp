@@ -149,11 +149,14 @@ main()
     f64 AspectRatio = (16.0 / 9.0);
     
     i32 WorldSelect = 4;
+    color Background = Color(0, 0, 0);
+    
     switch(WorldSelect)
     {
         case 1:
         {
             World = RandomScene();
+            Background = Color(0.7, 0.8, 1.0);
             VerticalFOV = 20;
             LookFrom = Vec3d(13, 2, 3);
             LookAt = Vec3d(0, 0, 0);
@@ -163,6 +166,7 @@ main()
         case 2:
         {
             World = TwoSpheres();
+            Background = Color(0.7, 0.8, 1.0);
             VerticalFOV = 20;
             LookFrom = Vec3d(13, 2, 3);
             LookAt = Vec3d(0, 0, 0);
@@ -171,6 +175,7 @@ main()
         case 3:
         {
             World = EarthScene();
+            Background = Color(0.7, 0.8, 1.0);
             VerticalFOV = 20;
             LookFrom = Vec3d(0, 0, 12);
             LookAt = Vec3d(0, 0, 0);
@@ -180,6 +185,7 @@ main()
         case 4:
         {
             World = TwoPerlinSpheres();
+            Background = Color(0.7, 0.8, 1.0);
             VerticalFOV = 20;
             LookFrom = Vec3d(13, 2, 3);
             LookAt = Vec3d(0, 0, 0);
@@ -199,6 +205,6 @@ main()
     Cam.Filename = "03_Earth.ppm";
     Cam.NumSamples = 100;
     Cam.MaxBounces = 50;
-    Cam.Render(World);
+    Cam.Render(World, Background);
     return 0;
 }

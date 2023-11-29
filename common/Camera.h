@@ -25,7 +25,7 @@ class camera
           ShutterOpenTime(shutterOpenTime), ShutterCloseTime(shutterCloseTime) {}   
     
     void
-    Render(const hittable &World)
+    Render(const hittable &World, const color &Background)
     {
         if(!Initialized)
         {
@@ -48,7 +48,7 @@ class camera
                 {
                     // Basically sample around a random position inside the pixel "square"
                     ray Ray = GetRandomRayAround(X, Y);
-                    PixelColor += RayColor(Ray, MaxBounces, World);
+                    PixelColor += RayColor(Ray, Background, MaxBounces, World);
                 }
                     
                 WriteColor(&this->Data, PixelColor, this->NumSamples);
@@ -193,55 +193,65 @@ class camera
         
         return Result;
     }
-    
-    
+
     color
-    RayColor(const ray &Ray, i32 BounceCount, const hittable &World) 
+    RayColor(const ray &Ray, const color &Background, i32 BounceCount,
+             const hittable &World)
     {
         // Render the "Hit" Object
         hit_record Record;
-        
-        // We've exceeded the max bounce limit. No more light is gathered.
-        if(BounceCount <= 0)
+        color Result = Color(0, 0, 0);
+
+        // Only Continue if the light ray has not crossed our max bounce
+        // threshold.
+        if(BounceCount > 0)
         {
-            color Result = Color(0, 0, 0);
-            return Result;
-        }
-        
-        // NOTE:
-        // There’s also a subtle bug that we need to address. A ray will attempt
-        // to accurately calculate the intersection point when it intersects
-        // with a surface. Unfortunately for us, this calculation is susceptible
-        // to floating point rounding errors which can cause the intersection
-        // point to be ever so slightly off. This means that the origin of the
-        // next ray, the ray that is randomly scattered off of the surface, is
-        // unlikely to be perfectly flush with the surface. It might be just
-        // above the surface. It might be just below the surface. If the ray's
-        // origin is just below the surface then it could intersect with that
-        // surface again. Which means that it will find the nearest surface at
-        // t=0.00000001 or whatever floating point approximation the hit
-        // function gives us. The simplest hack to address this is just to
-        // ignore hits that are very close to the calculated intersection point:
-        f64 ShadowAcneCorrection = 0.001;
-        if(World.Hit(Ray, interval(ShadowAcneCorrection, Infinity), Record))
-        {
-            ray Scattered;
-            color Attenuation;
+            // NOTE:
+            // There’s also a subtle bug that we need to address. A ray will attempt
+            // to accurately calculate the intersection point when it intersects
+            // with a surface. Unfortunately for us, this calculation is susceptible
+            // to floating point rounding errors which can cause the intersection
+            // point to be ever so slightly off. This means that the origin of the
+            // next ray, the ray that is randomly scattered off of the surface, is
+            // unlikely to be perfectly flush with the surface. It might be just
+            // above the surface. It might be just below the surface. If the ray's
+            // origin is just below the surface then it could intersect with that
+            // surface again. Which means that it will find the nearest surface at
+            // t=0.00000001 or whatever floating point approximation the hit
+            // function gives us. The simplest hack to address this is just to
+            // ignore hits that are very close to the calculated intersection point:
+            f64 Correction = 0.001;
+            interval HitInterval = interval(Correction, Infinity);
             
-            color Result = Color(0, 0, 0);
-            if(Record.Material->Scatter(Ray, Record, Attenuation, Scattered))
+            if (!World.Hit(Ray, HitInterval, Record))
             {
-                Result = Attenuation*RayColor(Scattered, BounceCount-1, World);
+                Result = Background;
             }
-            
-            return Result;
+            else
+            {
+                ray Scattered;
+                color Attenuation;
+                color Emitted = Record.Material->Emitted(Record.U, Record.V, Record.P);
+                
+                if(!Record.Material->Scatter(Ray, Record, Attenuation, Scattered))
+                {
+                    Result = Emitted;
+                }
+                else
+                {
+                    Result = Emitted + (Attenuation*RayColor(Scattered, Background,
+                                                             BounceCount-1, World));
+                }
+            }
         }
-        
+
+#if RENDER_SKY
         // NOTE: Render the Sky.
         vec3d UnitDirection = Normalize(Ray.Direction());
         // should be in the range (0,1) for color.
         f64 a = 0.5*(UnitDirection.y + 1.0);
         color Result = (1.0 - a)*Color(1.0, 1.0, 1.0) + a*Color(0.5, 0.7, 1.0);
+#endif
         
         return Result;
     }
