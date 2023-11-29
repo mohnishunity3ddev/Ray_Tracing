@@ -225,6 +225,8 @@ class camera
             
             if (!World.Hit(Ray, HitInterval, Record))
             {
+                // NOTE: If the Ray hits nothing, then return the background
+                // color that was passed here.
                 Result = Background;
             }
             else
