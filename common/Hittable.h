@@ -19,7 +19,7 @@ class hit_record
     
     // NOTE: Sets the hit record normal vector
     // The OutwardNormal is assumed to be of unit length
-    void set_face_normal(const ray &Ray, const vec3d &OutwardNormal)
+    void SetFaceNormal(const ray &Ray, const vec3d &OutwardNormal)
     {
         // if the ray direction and the outward pointing normal passed in are
         // opposing vectors, then that means the ray is coming from outside the

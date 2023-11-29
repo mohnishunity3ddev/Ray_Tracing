@@ -65,7 +65,7 @@ class sphere : public hittable
         
         // This is a Unit Vector.
         vec3d OutwardNormal = ((Record.P - center) / radius);
-        Record.set_face_normal(Ray, OutwardNormal);
+        Record.SetFaceNormal(Ray, OutwardNormal);
         
         // NOTE: Update the UV Texture Coordinates.
         GetSphereUV(OutwardNormal, Record .U, Record.V);
