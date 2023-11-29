@@ -6,6 +6,12 @@
 
 #include <algorithm>
 
+// NOTE: This is bvh short for Bounding Volume hierarchy. This basically groups
+// multiple objects inside a "Volume". So instead of checking for intersections
+// with all these objects, it can just check intersectionm with a volume and
+// then check which of the objects are being hit. If the ray does not hit the
+// volume then it guarantees that the ray does not hit any of the objects it
+// contains either. This is an optimization technique.
 class bvh_node : public hittable
 {
   public:

@@ -22,7 +22,7 @@ class noise_texture : public texture
 #elif !MARBLE_LIKE
         color Result = Color(1, 1, 1)*noise.Turbulence(frequency*P);
 #else
-
+        
         color Result = 0.5*Color(1, 1, 1)*
                        (1.0+sin(Freq.z + 10.0*noise.Turbulence(Freq)));
 #endif
