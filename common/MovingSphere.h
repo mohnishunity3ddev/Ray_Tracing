@@ -72,7 +72,7 @@ class moving_sphere : public hittable
         
         // This is a Unit Vector.
         vec3d OutwardNormal = ((Record.P-SpherePosAtTime) / radius);
-        Record.set_face_normal(Ray, OutwardNormal);
+        Record.SetFaceNormal(Ray, OutwardNormal);
         
         return true;
     }
