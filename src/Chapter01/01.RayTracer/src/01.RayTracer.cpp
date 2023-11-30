@@ -141,7 +141,9 @@ SimpleLight()
     Objects.Add(std::make_shared<sphere>(Vec3d(0, -1000, 0), 1000, std::make_shared<lambertian>(PerlinTex)));
     Objects.Add(std::make_shared<sphere>(Vec3d(0, 2, 0), 2, std::make_shared<lambertian>(PerlinTex)));
 
+
     std::shared_ptr<material> DiffLight = std::make_shared<diffuse_light>(Color(4, 4, 4));
+    Objects.Add(std::make_shared<sphere>(Vec3d(0, 7, 0), 1, DiffLight));
     Objects.Add(std::make_shared<xy_rect>(3, 5, 1, 3, -2, DiffLight));
 
     return Objects;
