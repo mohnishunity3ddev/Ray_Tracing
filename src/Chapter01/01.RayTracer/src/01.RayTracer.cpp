@@ -124,6 +124,20 @@ SimpleLight()
 
     std::shared_ptr<noise_texture> PerlinTex = std::make_shared<noise_texture>(4.);
 
+    // IMPORTANT: NOTE:
+    // In this scene, there is a simple diffuse light and two lambertian
+    // material spheres. Light does not scatter light, it just emits light. In
+    // the Camera.RayColor function which computes the color the ray will get
+    // What it also does is based on how far a pixel is from the light.
+    // How does it do it?
+    // A pixel on the lambertian sphere reflects light(Scatters), if it scatters
+    // light towards the light, then it gets the color of the light. More pixels
+    // reflecting rays towards the light, More bright the surface pixel is due
+    // to the said light. Hence, far off pixels are less bright due to the
+    // light because less rays are getting scattered towards the light. If this
+    // was Rasterization, then this is what Attenuation factor does by dividing
+    // the color of the surface by the distance squared between the surface
+    // pixel and the light.;
     Objects.Add(std::make_shared<sphere>(Vec3d(0, -1000, 0), 1000, std::make_shared<lambertian>(PerlinTex)));
     Objects.Add(std::make_shared<sphere>(Vec3d(0, 2, 0), 2, std::make_shared<lambertian>(PerlinTex)));
 
