@@ -1,8 +1,9 @@
 {
-    "editor.fontFamily": "Maple Mono NF",
+    "editor.fontFamily": "'Maple Mono NF', 'Ubuntu Mono', 'JetBrainsMono NF', 'DroidSansMono NF', 'CaskaydiaCove NF Mono', 'CaskaydiaCove Nerd Font Mono', 'FiraCode NF', 'agave Nerd Font', 'Cascadia Mono',   'Cascadia Mono', Liberation Mono, Roboto Condensed, Consolas, 'Courier New', monospace",
+
     "editor.fontSize": 15,
     "editor.fontLigatures": true,
-    "editor.fontWeight": "bold",
+    "editor.fontWeight": "normal",
 
     "terminal.integrated.profiles.windows": {
         "Default Profile": {
