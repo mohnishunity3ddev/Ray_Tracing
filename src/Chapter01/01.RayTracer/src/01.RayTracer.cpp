@@ -9,6 +9,8 @@
 #include <Perlin.h>
 #include <NoiseTexture.h>
 #include <ImageTexture.h>
+#include <DiffuseLight.h>
+#include <AARect.h>
 
 hittable_list
 RandomScene()
@@ -115,6 +117,22 @@ TwoPerlinSpheres()
     return Result;
 }
 
+hittable_list
+SimpleLight()
+{
+    hittable_list Objects;
+    
+    std::shared_ptr<noise_texture> PerlinTex = std::make_shared<noise_texture>(4.);
+    
+    Objects.Add(std::make_shared<sphere>(Vec3d(0, -1000, 0), 1000, std::make_shared<lambertian>(PerlinTex)));
+    Objects.Add(std::make_shared<sphere>(Vec3d(0, 2, 0), 2, std::make_shared<lambertian>(PerlinTex)));
+    
+    std::shared_ptr<material> DiffLight = std::make_shared<diffuse_light>(Color(4, 4, 4));
+    Objects.Add(std::make_shared<xy_rect>(3, 5, 1, 3, -2, DiffLight));
+
+    return Objects;
+}
+
 int
 main()
 {
@@ -148,9 +166,11 @@ main()
     
     f64 AspectRatio = (16.0 / 9.0);
     
-    i32 WorldSelect = 4;
+    i32 WorldSelect = 5;
     color Background = Color(0, 0, 0);
-    
+
+    i32 SamplesPerPixel = 100;
+
     switch(WorldSelect)
     {
         case 1:
@@ -191,6 +211,16 @@ main()
             LookAt = Vec3d(0, 0, 0);
         } break;
         
+        case 5:
+        {
+            World = SimpleLight();
+            SamplesPerPixel = 400;
+            Background = Color(0, 0, 0);
+            LookFrom = Vec3d(26, 3, 6);
+            LookAt = Vec3d(0, 2, 0);
+            VerticalFOV = 20.0;
+        } break;
+        
         default: { }
     }
     
@@ -199,11 +229,11 @@ main()
     f64 Dist = (FocusAt - Camera.LookFrom).Magnitude();
 #endif
     
-    i32 ImageWidth = 400;
+    i32 ImageWidth = 1920;
     camera Cam = camera(LookFrom, LookAt, Up, VerticalFOV, ImageWidth, AspectRatio, 
                         DefocusAngle, FocusDistance, ShutterOpenTime, ShutterCloseTime);
-    Cam.Filename = "03_Earth.ppm";
-    Cam.NumSamples = 100;
+    Cam.Filename = "06_SimpleLight.ppm";
+    Cam.NumSamples = SamplesPerPixel;
     Cam.MaxBounces = 50;
     Cam.Render(World, Background);
     return 0;
