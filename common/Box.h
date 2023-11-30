@@ -34,7 +34,7 @@ box::box(const vec3d &P0, const vec3d &P1,
 
     sides.Add(std::make_shared<xy_rect>(P0.x, P1.x, P0.y, P1.y, P1.z, MaterialPtr));
     sides.Add(std::make_shared<xy_rect>(P0.x, P1.x, P0.y, P1.y, P0.z, MaterialPtr));
-
+    
     sides.Add(std::make_shared<xz_rect>(P0.x, P1.x, P0.z, P1.z, P1.y, MaterialPtr));
     sides.Add(std::make_shared<xz_rect>(P0.x, P1.x, P0.z, P1.z, P0.y, MaterialPtr));
 
@@ -165,7 +165,7 @@ rotate_y::rotate_y(std::shared_ptr<hittable> HittablePtr, f64 AngleInDegrees)
             }
         }
     }
-    
+
     bbox = aabb(Min, Max);
 }
 
