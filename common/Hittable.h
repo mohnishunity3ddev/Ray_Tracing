@@ -16,7 +16,7 @@ class hit_record
     f64 t; // the t in ray's eq: A + tB
     f64 U, V; // U and V surface coordinates of the ray-object hit point.
     b32 FrontFace;
-    
+
     // NOTE: Sets the hit record normal vector
     // The OutwardNormal is assumed to be of unit length
     void SetFaceNormal(const ray &Ray, const vec3d &OutwardNormal)

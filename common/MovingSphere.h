@@ -14,7 +14,7 @@ class moving_sphere : public hittable
           materialPtr(matPtr)
     {
     }
-    
+
     // Returns true if the generated ray hits the sphere.
     // (x−Cx)^2 + (y−Cy)^2 + (z−Cz)^2 = r^2
     // (P−C)⋅(P−C) = (x−Cx)^2 + (y−Cy)^2 + (z−Cz)^2 [P is any point on sphere, C
@@ -30,7 +30,7 @@ class moving_sphere : public hittable
     {
         vec3d SpherePosAtTime = Center(Ray.Time());
         vec3d OC = Ray.Origin() - SpherePosAtTime;
-        
+
         // (B⋅B) is square magnitude of the vector.
         // a here is the coefficient of t^2 in the above quadratic equation.
         f64 a = Ray.Direction().SqMagnitude();
@@ -39,7 +39,7 @@ class moving_sphere : public hittable
         // c here is the constant in the quadratic equation of t described
         // above. c = ((A−C)⋅(A−C)−r^2)
         f64 c = OC.SqMagnitude() - radius * radius;
-        
+
         // NOTE:
         // -b -sqrt(b2 - 4ac) / 2a
         // if h = 2*b, this becomes -h - sqrt(h2 - ac) / a
@@ -50,9 +50,9 @@ class moving_sphere : public hittable
         {
             return false;
         }
-        
+
         f64 SqRootDiscriminant = sqrt(Discriminant);
-        
+
         // Find the nearest root that lies within the acceptable range.
         f64 Root = (-Half_b - SqRootDiscriminant) / a;
         if (!Interval.Surrounds(Root))
@@ -63,32 +63,32 @@ class moving_sphere : public hittable
                 return false;
             }
         }
-        
+
         // The Root is actually a value of t that satisfies the ray-sphere
         // intersection quadratic eq.
         Record.t = Root;
         Record.P = Ray.At(Record.t);
         Record.Material = materialPtr;
-        
+
         // This is a Unit Vector.
         vec3d OutwardNormal = ((Record.P-SpherePosAtTime) / radius);
         Record.SetFaceNormal(Ray, OutwardNormal);
-        
+
         return true;
     }
 
     b32
     BoundingBox(f64 Time0, f64 Time1, aabb &OutputBox) const override
     {
-        aabb Box0 = aabb(Center(Time0) - Vec3d(radius), 
+        aabb Box0 = aabb(Center(Time0) - Vec3d(radius),
                          Center(Time0) + Vec3d(radius));
-        aabb Box1 = aabb(Center(Time1) - Vec3d(radius), 
+        aabb Box1 = aabb(Center(Time1) - Vec3d(radius),
                          Center(Time1) + Vec3d(radius));
 
         OutputBox = aabb::SurroundingBox(Box0, Box1);
         return true;
     }
-    
+
     // NOTE: Where is the sphere located at the given time.
     vec3d
     Center(f64 Time) const
@@ -96,7 +96,7 @@ class moving_sphere : public hittable
         vec3d Result = center0 + ((Time-time0) / (time1-time0))*(center1-center0);
         return Result;
     }
-  
+
   private:
     // The sphere is moving. It is at center0 at time t0 and center1 at time t1
     vec3d center0, center1;

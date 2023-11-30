@@ -10,24 +10,24 @@ class hittable_list : public hittable
 {
   public:
     std::vector<std::shared_ptr<hittable>> Objects;
-    
+
     hittable_list() {}
     hittable_list(std::shared_ptr<hittable> Object) { Add(Object); }
-    
+
     void Clear() { Objects.clear(); }
-    
+
     void Add(std::shared_ptr<hittable> Object)
     {
         Objects.push_back(Object);
     }
-    
+
     b32
     Hit(const ray &Ray, const interval &Interval, hit_record &Record) const override
     {
         hit_record TempRecord;
         b32 HitAnything = false;
         f64 ClosestSoFar = Interval.Max;
-        
+
         for(const auto &Object : Objects)
         {
             // NOTE:This variable is named ClosestSoFar because if suppose we
@@ -40,20 +40,20 @@ class hittable_list : public hittable
             // object's surface point 't'.
             if(Object->Hit(Ray, interval(Interval.Min, ClosestSoFar), TempRecord))
             {
-                HitAnything = true; 
+                HitAnything = true;
                 ClosestSoFar = TempRecord.t;
                 Record = TempRecord;
             }
         }
-        
+
         return HitAnything;
     }
-    
+
     b32
     BoundingBox(f64 Time0, f64 Time1, aabb &OutputBox) const override
     {
         b32 Result = true;
-        if(Objects.empty()) 
+        if(Objects.empty())
         {
             Result = false;
         }
@@ -61,7 +61,7 @@ class hittable_list : public hittable
         {
             aabb TempBox;
             b32 FirstBox = true;
-            
+
             for(const auto &Object : Objects)
             {
                 if(!Object->BoundingBox(Time0, Time1, TempBox))
@@ -75,7 +75,7 @@ class hittable_list : public hittable
                 FirstBox = false;
             }
         }
-        
+
         return Result;
     }
 };

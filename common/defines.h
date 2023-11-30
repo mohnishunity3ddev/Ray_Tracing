@@ -80,7 +80,7 @@ inline i32
 RandomRangeInt(i32 A, i32 B)
 {
     i32 Result = static_cast<i32>(RandRange(A, B+1));
-    
+
     return Result;
 }
 

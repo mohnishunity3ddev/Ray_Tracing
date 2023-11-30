@@ -9,13 +9,13 @@ class xy_rect : public hittable
     xy_rect() {}
     xy_rect(f64 X0, f64 X1, f64 Y0, f64 Y1, f64 _k, std::shared_ptr<material> Mat)
         : x0(X0), y0(Y0), x1(X1), y1(Y1), k(_k), mp(Mat) {}
-        
+
     virtual b32
     Hit(const ray &Ray, const interval &Interval,
         hit_record &Record) const override
     {
         b32 Result = false;
-        
+
         // NOTE: k here is the rectangle's Z Position.
         f64 t = (k - Ray.Origin().z) / Ray.Direction().z;
         if((t > Interval.Min) && (t < Interval.Max))
@@ -38,10 +38,10 @@ class xy_rect : public hittable
             }
         }
 
-        
+
         return Result;
     }
-    
+
     virtual b32
     BoundingBox(f64 Time0, f64 Time1, aabb &OutputBox) const override
     {
@@ -50,12 +50,12 @@ class xy_rect : public hittable
         // work correctly.
         vec3d MinRange = Vec3d(x0, y0, k-0.0001);
         vec3d MaxRange = Vec3d(x1, y1, k+0.0001);
-        
+
         OutputBox = aabb(MinRange, MaxRange);
-        
+
         return true;
     }
-  
+
   private:
     std::shared_ptr<material> mp;
     f64 x0, y0;

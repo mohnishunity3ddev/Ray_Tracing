@@ -7,7 +7,7 @@ class diffuse_light : public material
 {
   public:
     diffuse_light(std::shared_ptr<texture> Tex) : emitTexture(Tex) {}
-    diffuse_light(color Color) 
+    diffuse_light(color Color)
     {
         std::shared_ptr<texture> ColTex = std::make_shared<solid_color>(Color);
         emitTexture = ColTex;
@@ -19,7 +19,7 @@ class diffuse_light : public material
     {
         return false;
     }
-    
+
     virtual color
     Emitted(f64 U, f64 V, const vec3d &P) const override
     {
@@ -29,7 +29,7 @@ class diffuse_light : public material
 
   private:
     std::shared_ptr<texture> emitTexture;
-};  
+};
 
 #define DIFFUSE_LIGHT_H
 #endif

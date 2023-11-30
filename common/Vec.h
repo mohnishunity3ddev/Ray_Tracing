@@ -1,6 +1,6 @@
 #if !defined(VEC_H)
 #include "defines.h"
-    
+
 template <typename T>
 struct vec2
 {
@@ -11,7 +11,7 @@ struct vec2
         struct { T w, h; };
         f32 E[2];
     };
-    
+
     inline vec2<T> operator+=(const vec2<T>& A);
     inline vec2<T> operator-=(const vec2<T>& A);
     inline vec2<T> operator*=(T A);
@@ -51,7 +51,7 @@ struct vec3
 {
   private:
     static inline vec3<T> RandomInUnitSphere();
-  
+
   public:
     union
     {
@@ -67,7 +67,7 @@ struct vec3
         struct { T Unused_5; vec2<T> gb; };
         T E[3];
     };
-    
+
     inline vec3<T> operator+=(const vec3<T>& A);
     inline vec3<T> operator-=(const vec3<T>& A);
     inline vec3<T> operator*=(T A);
@@ -79,7 +79,7 @@ struct vec3
     inline T Dot(const vec3<T> &A);
     inline vec3<T> Cross(const vec3<T> &A);
     inline b32 NearZero() const;
-    
+
     static inline vec3<T> Rand01();
     static inline vec3<T> RandRange(T Min, T Max);
     static inline vec3<T> One();
@@ -142,7 +142,7 @@ struct vec4
         struct { vec3<T> rgb; T Reserved_1; };
         T E[4];
     };
-    
+
     inline vec4<T> operator+=(const vec4<T>& A);
     inline vec4<T> operator-=(const vec4<T>& A);
     inline vec4<T> operator*=(T A);
@@ -239,11 +239,11 @@ vec2<T>
 operator/(const vec2<T>& A, const vec2<T>& B)
 {
     vec2<T> Result;
-    
+
     ASSERT(B.x != 0.0f && B.y != 0.0f);
     Result.x = A.x / B.x;
     Result.y = A.y / B.y;
-    
+
     return Result;
 }
 
@@ -253,10 +253,10 @@ operator/(const vec2<T>& A, T B)
 {
     vec2<T> Result;
     ASSERT(B != 0.0f);
-    
+
     Result.x = A.x / B;
     Result.y = A.y / B;
-    
+
     return Result;
 }
 
@@ -308,7 +308,7 @@ vec2<T>::operator[](size_t Index)
     {
         ASSERT(!"Index Out of Bounds");
     }
-    
+
     return this->E[Index];
 }
 
@@ -402,9 +402,9 @@ vec3<T>
 MakeVec3(const T * const Ptr)
 {
     vec3<T> Result = {};
-    
+
     memcpy(Result.E, Ptr, sizeof(T) * 3);
-    
+
     return Result;
 }
 
@@ -413,7 +413,7 @@ vec3<T>
 Vec3(const vec2<T>& xy, T z)
 {
     vec3<T> Result = Vec3(xy.x, xy.y, z);
-    
+
     return Result;
 }
 
@@ -482,10 +482,10 @@ b32
 vec3<T>::NearZero() const
 {
     auto S = 1e-8;
-    b32 Result = ((fabs(this->x) < S) && 
-                  (fabs(this->y) < S) && 
+    b32 Result = ((fabs(this->x) < S) &&
+                  (fabs(this->y) < S) &&
                   (fabs(this->z) < S));
-    
+
     return Result;
 }
 
@@ -494,7 +494,7 @@ vec3<T>
 Reflect(const vec3<T> &V, const vec3<T> &N)
 {
     vec3<T> Result;
-    
+
     T d = Dot(V, N);
     // if V is moving IN to the surface with Normal N
     if(d < (T)0)
@@ -506,7 +506,7 @@ Reflect(const vec3<T> &V, const vec3<T> &N)
     {
         Result = 2*Dot(V, N)*N - V;
     }
-    
+
     return Result;
 }
 
@@ -518,10 +518,10 @@ vec3<T>
 Refract(const vec3<T> &Incident, const vec3<T> &Normal, const f64 N1ByN2)
 {
     f64 CosTheta = MIN(Dot(-Incident, Normal), 1.0);
-    
+
     vec3<T> RPerpendicular = N1ByN2*(Incident + CosTheta*Normal);
     vec3<T> RParallel = -sqrt(ABSOLUTE(1.0 - RPerpendicular.SqMagnitude()))*Normal;
-    
+
     vec3<T> Refracted = (RPerpendicular + RParallel);
     return Refracted;
 }
@@ -531,11 +531,11 @@ vec3<T>
 operator+(const vec3<T>& A, const vec3<T>& B)
 {
     vec3<T> Result;
-    
+
     Result.x = A.x + B.x;
     Result.y = A.y + B.y;
     Result.z = A.z + B.z;
-    
+
     return Result;
 }
 
@@ -544,11 +544,11 @@ vec3<T>
 operator-(const vec3<T>& A, const vec3<T>& B)
 {
     vec3<T> Result;
-    
+
     Result.x = A.x - B.x;
     Result.y = A.y - B.y;
     Result.z = A.z - B.z;
-    
+
     return Result;
 }
 
@@ -557,11 +557,11 @@ vec3<T>
 operator-(const vec3<T>& A)
 {
     vec3<T> Result;
-    
+
     Result.x = -A.x;
     Result.y = -A.y;
     Result.z = -A.z;
-    
+
     return Result;
 }
 
@@ -570,11 +570,11 @@ vec3<T>
 operator*(S B, const vec3<T> &A)
 {
     vec3<T> Result;
-    
+
     Result.x = B * A.x;
     Result.y = B * A.y;
     Result.z = B * A.z;
-    
+
     return Result;
 }
 
@@ -583,11 +583,11 @@ vec3<T>
 operator*(const vec3<T>& A, S B)
 {
     vec3<T> Result;
-    
+
     Result.x = B * A.x;
     Result.y = B * A.y;
     Result.z = B * A.z;
-    
+
     return Result;
 }
 
@@ -596,11 +596,11 @@ vec3<T>
 operator*(const vec3<T>& A, T B)
 {
     vec3<T> Result;
-    
+
     Result.x = B * A.x;
     Result.y = B * A.y;
     Result.z = B * A.z;
-    
+
     return Result;
 }
 
@@ -609,11 +609,11 @@ vec3<T>
 operator*(const vec3<T> &A, const vec3<T> &B)
 {
     vec3<T> Result;
-    
+
     Result.x = B.x*A.x;
     Result.y = B.y*A.y;
     Result.z = B.z*A.z;
-    
+
     return Result;
 }
 
@@ -622,11 +622,11 @@ vec3<T>
 operator*(T B, const vec3<T> &A)
 {
     vec3<T> Result;
-    
+
     Result.x = B*A.x;
     Result.y = B*A.y;
     Result.z = B*A.z;
-    
+
     return Result;
 }
 
@@ -635,13 +635,13 @@ vec3<T>
 operator/(const vec3<T>& A, const vec3<T>& B)
 {
     vec3<T> Result;
-    
+
     ASSERT(B.x != 0.0f && B.y != 0.0f && B.z != 0.0f);
-    
+
     Result.x = A.x / B.x;
     Result.y = A.y / B.y;
     Result.z = A.z / B.z;
-    
+
     return Result;
 }
 
@@ -650,13 +650,13 @@ vec3<T>
 operator/(const vec3<T>& A, T B)
 {
     vec3<T> Result;
-    
+
     ASSERT(B != 0.0f);
-    
+
     Result.x = A.x / B;
     Result.y = A.y / B;
     Result.z = A.z / B;
-    
+
     return Result;
 }
 
@@ -665,13 +665,13 @@ vec3<T>
 operator/(const vec3<T> &A, const i32 B)
 {
     vec3<T> Result;
-    
+
     ASSERT(B != 0);
-    
+
     Result.x = A.x / B;
     Result.y = A.y / B;
     Result.z = A.z / B;
-    
+
     return Result;
 }
 
@@ -723,7 +723,7 @@ vec3<T>::operator[](size_t Index)
     {
         ASSERT(!"Index Out of Bounds");
     }
-    
+
     return this->E[Index];
 }
 
@@ -749,11 +749,11 @@ vec3<T>
 vec3<T>::One()
 {
     vec3<T> Result;
-    
+
     Result.x = (T)1.0;
     Result.y = (T)1.0;
     Result.z = (T)1.0;
-    
+
     return Result;
 }
 
@@ -810,7 +810,7 @@ vec3<T>::RandomInUnitSphere()
             break;
         }
     }
-    
+
     return Result;
 }
 
@@ -820,7 +820,7 @@ vec3<T>::RandomUnitVector()
 {
     vec3<T> Result = RandomInUnitSphere();
     Result = Normalize(Result);
-    
+
     return Result;
 }
 
@@ -834,7 +834,7 @@ vec3<T>::RandomInUnitHemisphere(const vec3<T> &Normal)
     {
         Result = -Result;
     }
-    
+
     return Result;
 }
 
@@ -854,7 +854,7 @@ vec3<T>::RandomInUnitDisk()
             break;
         }
     }
-    
+
     return Result;
 }
 

@@ -6,19 +6,19 @@
 class perlin
 {
   public:
-    perlin() 
+    perlin()
     {
         randVec = new vec3d[pointCount];
         for(i32 Index = 0; Index < pointCount; ++Index)
         {
             randVec[Index] = vec3d::RandRange(-1, 1);
         }
-        
+
         permX = PerlinGeneratePerm();
         permY = PerlinGeneratePerm();
         permZ = PerlinGeneratePerm();
     }
-    
+
     ~perlin()
     {
         delete[] randVec;
@@ -26,18 +26,18 @@ class perlin
         delete[] permY;
         delete[] permZ;
     }
-    
+
     f64
     Noise(const vec3d &P) const
     {
         f64 U = P.x - floor(P.x);
         f64 V = P.y - floor(P.y);
         f64 W = P.z - floor(P.z);
-        
+
         i32 I = (i32)(floor(P.x));
         i32 J = (i32)(floor(P.y));
         i32 K = (i32)(floor(P.z));
-        
+
         vec3d C[2][2][2];
         for(i32 dI = 0; dI < 2; ++dI)
         {
@@ -52,7 +52,7 @@ class perlin
                 }
             }
         }
-        
+
         f64 Result = TrilinearInterp(C, U, V, W);
         return Result;
     }
@@ -64,24 +64,24 @@ class perlin
         f64 Accum = 0.;
         vec3d TempP = P;
         f64 Weight = 1.;
-        
+
         for(i32 I = 0; I < Depth; ++I)
         {
             Accum += Weight*Noise(TempP);
             Weight *= 0.5;
             TempP *= 2;
         }
-        
+
         f64 Result = ABSOLUTE(Accum);
-        
+
         return Result;
     }
-  
+
   private:
     static const i32 pointCount = 256;
     vec3d *randVec;
     i32 *permX, *permY, *permZ;
-    
+
     static i32 *
     PerlinGeneratePerm()
     {
@@ -90,11 +90,11 @@ class perlin
         {
             P[Index] = Index;
         }
-        
+
         Permute(P, pointCount);
         return P;
     }
-    
+
     static f64
     TrilinearInterp(vec3d C[2][2][2], f64 U, f64 V, f64 W)
     {
@@ -102,8 +102,8 @@ class perlin
         f64 uu = U*U*(3 - 2*U);
         f64 vv = V*V*(3 - 2*V);
         f64 ww = W*W*(3 - 2*W);
-        
-        
+
+
         f64 Accum = 0.0;
         for(i32 i = 0; i < 2; ++i)
         {
@@ -119,10 +119,10 @@ class perlin
                 }
             }
         }
-        
+
         return Accum;
     }
-    
+
     static void
     Permute(i32 *P, i32 N)
     {

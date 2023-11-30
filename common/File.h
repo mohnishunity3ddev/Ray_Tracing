@@ -6,10 +6,10 @@
 struct ppm
 {
     const char *Filename;
-    
+
     i32 Width;
     i32 Height;
-    
+
     u8 *ColorData;
     u64 Size;
 };
@@ -29,11 +29,11 @@ WritePPM(const ppm *PPM)
         printf("There was an error opening file: %s\n", PPM->Filename);
         return;
     }
-    
+
     fprintf(File, "P6\n%d %d\n255\n", PPM->Width, PPM->Height);
-    
+
     u64 WriteElements = fwrite(PPM->ColorData, sizeof(u8), PPM->Size, File);
-    
+
     fclose(File);
     File = nullptr;
 }
@@ -42,22 +42,22 @@ file_read_info
 ReadFile(const char *Filename)
 {
     file_read_info Result = {};
-    
+
     FILE *File = fopen(Filename, "rb");
     if (!File)
     {
         printf("There was an error opening file: %s\n", Filename);
         return Result;
     }
-    
+
     fseek(File, 0, SEEK_END);
     u64 Size = ftell(File);
     fseek(File, 0, SEEK_SET);
-    
+
     if (Size > 0)
     {
         u8 *Data = (u8 *)malloc(Size);
-        
+
         if (Data)
         {
             u64 BytesRead = fread(Data, sizeof(u8), Size, File);
@@ -75,9 +75,9 @@ ReadFile(const char *Filename)
             }
         }
     }
-    
+
     fclose(File);
-    
+
     return Result;
 }
 #define FILE_H

@@ -22,13 +22,13 @@ class bvh_node : public hittable
     }
     bvh_node(const std::vector<std::shared_ptr<hittable>> &SrcObjects,
              size_t Start, size_t End, f64 Time0, f64 Time1);
-    
+
     virtual b32 Hit(const ray &Ray, const interval &Interval,
                     hit_record &Record) const override;
-    
+
     virtual b32 BoundingBox(f64 Time0, f64 Time1,
                             aabb &OutputBox) const override;
-  
+
   private:
     std::shared_ptr<hittable> left;
     std::shared_ptr<hittable> right;
@@ -41,11 +41,11 @@ BoxCompare(const std::shared_ptr<hittable> A,
            i32 Axis)
 {
     b32 Result = false;
-    
+
     aabb BoxA;
     aabb BoxB;
-    
-    if(!A->BoundingBox(0, 0, BoxA) || 
+
+    if(!A->BoundingBox(0, 0, BoxA) ||
        !B->BoundingBox(0, 0, BoxB))
     {
         ASSERT(!"There was an error here in computing bounding boxes!\n");
@@ -55,7 +55,7 @@ BoxCompare(const std::shared_ptr<hittable> A,
     {
         Result = (BoxA.Min()[Axis] < BoxB.Min()[Axis]);
     }
-    
+
     return Result;
 }
 
@@ -89,13 +89,13 @@ bvh_node::bvh_node(const std::vector<std::shared_ptr<hittable>> &SrcObjects,
 {
     // Modifiable array of objects.
     auto tObjects = SrcObjects;
-    
+
     //  Random Axis
     i32 RandomAxis = RandomRangeInt(0, 2);
     auto Comparator = (RandomAxis == 0) ? BoxCompareXAxis
                                         : ((RandomAxis == 1) ? BoxCompareYAxis
                                                              : BoxCompareZAxis);
-    
+
     // NOTE: Splitting the BVH Volumes.
     size_t ObjectSpan = (End - Start);
     if(ObjectSpan == 1)
@@ -118,13 +118,13 @@ bvh_node::bvh_node(const std::vector<std::shared_ptr<hittable>> &SrcObjects,
     else
     {
         std::sort(tObjects.begin() + Start, tObjects.begin() + End, Comparator);
-        
+
         auto Mid = Start + ObjectSpan/2;
-        
+
         this->left = std::make_shared<bvh_node>(tObjects, Start, Mid, Time0, Time1);
         this->right = std::make_shared<bvh_node>(tObjects, Mid, End, Time0, Time1);
     }
-    
+
     // NOTE: Set the bounding boxes of the child bvh nodes.
     aabb BoxLeft, BoxRight;
     if(!this->left->BoundingBox(Time0, Time1, BoxLeft) ||
@@ -132,7 +132,7 @@ bvh_node::bvh_node(const std::vector<std::shared_ptr<hittable>> &SrcObjects,
     {
         ASSERT(!"No bounding box in bvh_node constructor.\n");
     }
-    
+
     // NOTE: Parent Box contains both the child boxes.
     this->box = aabb::SurroundingBox(BoxLeft, BoxRight);
 }
@@ -149,7 +149,7 @@ bvh_node::Hit(const ray &Ray, const interval &Interval,
               hit_record &Record) const
 {
     b32 Result = false;
-    
+
     // Check whether the bounding box of this node is hit
     if(!this->box.Hit(Ray, Interval.Min, Interval.Max))
     {
@@ -160,13 +160,13 @@ bvh_node::Hit(const ray &Ray, const interval &Interval,
         // NOTE: If the bounding box for this bvh is hit, check the child nodes
         // of this node to check whether they hit.
         hit_record LeftRecord, RightRecord;
-        
+
         // These Left and Right Nodes can be bvh's or spheres or moving spheres.
         b32 HitLeft = this->left->Hit(Ray, Interval, LeftRecord);
-        
+
         // NOTE: Both the child objects's bounding boxes can overlap
         b32 HitRight = this->right->Hit(Ray, Interval, RightRecord);
-        
+
         // NOTE: If both children are hit by the ray
         if(HitLeft && HitRight)
         {
@@ -192,7 +192,7 @@ bvh_node::Hit(const ray &Ray, const interval &Interval,
             Result = true;
         }
     }
-    
+
     return Result;
 }
 

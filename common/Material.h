@@ -134,7 +134,7 @@ class dielectric : public material
         {
             Direction = Refract(UnitDirection, Record.Normal, RefractionRatio);
         }
-
+        
         ScatteredRay = ray(Record.P, Direction, RayIn.Time());
         
         return true;

@@ -3,7 +3,7 @@
     "editor.fontSize": 15,
     "editor.fontLigatures": true,
     "editor.fontWeight": "bold",
-    
+
     "terminal.integrated.profiles.windows": {
         "Default Profile": {
             "path": [
@@ -17,7 +17,7 @@
         }
     },
     "terminal.integrated.defaultProfile.windows": "Default Profile",
-   
+
     "files.associations": {
         "chrono": "cpp",
         "system_error": "cpp",
@@ -104,5 +104,6 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "*.in": "cpp"
-    }
+    },
+    "files.trimTrailingWhitespace": true
 }
