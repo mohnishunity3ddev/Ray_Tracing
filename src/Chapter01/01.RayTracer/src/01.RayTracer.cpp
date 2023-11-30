@@ -157,9 +157,9 @@ CornellBox()
 
     auto RedMat = std::make_shared<lambertian>(Color(.65, .05, .05));
     auto GreenMat = std::make_shared<lambertian>(Color(.12, .45, .15));
-    // auto BlueMat = std::make_shared<lambertian>(Color(.12, .15, .55));
     auto WhiteMat = std::make_shared<lambertian>(Color(.73, .73, .73));
     auto Light = std::make_shared<diffuse_light>(Color(15, 15, 15));
+    auto BlueMat = std::make_shared<lambertian>(Color(.12, .15, .55));
 
     Objects.Add(std::make_shared<yz_rect>(0, 555, 0, 555, 555, GreenMat));  // Left Wall
     Objects.Add(std::make_shared<yz_rect>(0, 555, 0, 555, 0, RedMat));      // Right wall
@@ -168,10 +168,15 @@ CornellBox()
     Objects.Add(std::make_shared<xz_rect>(0, 555, 0, 555, 555, WhiteMat));   // Top Wall
     Objects.Add(std::make_shared<xy_rect>(0, 555, 0, 555, 555, WhiteMat));  // Front Wall
 
+    std::shared_ptr<hittable> Box1 = std::make_shared<box>(Vec3d(0,0,0), Vec3d(165,330,165), WhiteMat);
+    Box1 = std::make_shared<rotate_y>(Box1, 15);
+    Box1 = std::make_shared<translate>(Box1, Vec3d(265,0,295));
+    Objects.Add(Box1);
 
-    // NOTE: Add two boxes inside the room
-    Objects.Add(std::make_shared<box>(Vec3d(130, 0, 65), Vec3d(295, 165, 230), WhiteMat));
-    Objects.Add(std::make_shared<box>(Vec3d(265, 0, 295), Vec3d(430, 330, 460), WhiteMat));
+    std::shared_ptr<hittable> Box2 = std::make_shared<box>(Vec3d(0,0,0), Vec3d(165,165,165), BlueMat);
+    Box2 = std::make_shared<rotate_y>(Box2, -18);
+    Box2 = std::make_shared<translate>(Box2, Vec3d(130,0,65));
+    Objects.Add(Box2);
 
     return Objects;
 }
@@ -269,8 +274,8 @@ main()
         {
             World = CornellBox();
             AspectRatio = 1.0;
-            ImageWidth = 600;
-            SamplesPerPixel = 200;
+            ImageWidth = 1080;
+            SamplesPerPixel = 400;
             Background = Color(0, 0, 0);
             LookFrom = Vec3d(278, 278, -800);
             LookAt = Vec3d(278, 278, 0);

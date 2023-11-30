@@ -27,9 +27,12 @@ class hittable_list : public hittable
         hit_record TempRecord;
         b32 HitAnything = false;
         f64 ClosestSoFar = Interval.Max;
+        i32 Count = 0;
 
         for(const auto &Object : Objects)
         {
+            ++Count;
+
             // NOTE:This variable is named ClosestSoFar because if suppose we
             // hit an object in the world/list, The ClosestSoFar is set to the
             // 't' of its surface point. The next we call hit we set the max of
