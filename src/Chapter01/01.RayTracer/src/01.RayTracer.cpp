@@ -11,6 +11,7 @@
 #include <ImageTexture.h>
 #include <DiffuseLight.h>
 #include <AARect.h>
+#include <Box.h>
 
 hittable_list
 RandomScene()
@@ -167,6 +168,11 @@ CornellBox()
     Objects.Add(std::make_shared<xz_rect>(0, 555, 0, 555, 555, WhiteMat));   // Top Wall
     Objects.Add(std::make_shared<xy_rect>(0, 555, 0, 555, 555, WhiteMat));  // Front Wall
 
+
+    // NOTE: Add two boxes inside the room
+    Objects.Add(std::make_shared<box>(Vec3d(130, 0, 65), Vec3d(295, 165, 230), WhiteMat));
+    Objects.Add(std::make_shared<box>(Vec3d(265, 0, 295), Vec3d(430, 330, 460), WhiteMat));
+
     return Objects;
 }
 
@@ -281,7 +287,7 @@ main()
 
     camera Cam = camera(LookFrom, LookAt, Up, VerticalFOV, ImageWidth, AspectRatio,
                         DefocusAngle, FocusDistance, ShutterOpenTime, ShutterCloseTime);
-    Cam.Filename = "06c_CornellBox.ppm";
+    Cam.Filename = "07a_Instances_Box.ppm";
     Cam.NumSamples = SamplesPerPixel;
     Cam.MaxBounces = 50;
     Cam.Render(World, Background);
