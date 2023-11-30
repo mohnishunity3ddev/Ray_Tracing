@@ -149,6 +149,27 @@ SimpleLight()
     return Objects;
 }
 
+hittable_list
+CornellBox()
+{
+    hittable_list Objects;
+
+    auto RedMat = std::make_shared<lambertian>(Color(.65, .05, .05));
+    auto GreenMat = std::make_shared<lambertian>(Color(.12, .45, .15));
+    // auto BlueMat = std::make_shared<lambertian>(Color(.12, .15, .55));
+    auto WhiteMat = std::make_shared<lambertian>(Color(.73, .73, .73));
+    auto Light = std::make_shared<diffuse_light>(Color(15, 15, 15));
+
+    Objects.Add(std::make_shared<yz_rect>(0, 555, 0, 555, 555, GreenMat));  // Left Wall
+    Objects.Add(std::make_shared<yz_rect>(0, 555, 0, 555, 0, RedMat));      // Right wall
+    Objects.Add(std::make_shared<xz_rect>(213, 343, 227, 332, 554, Light)); // Light at the top
+    Objects.Add(std::make_shared<xz_rect>(0, 555, 0, 555, 0, WhiteMat));    // Bottom Wall
+    Objects.Add(std::make_shared<xz_rect>(0, 555, 0, 555, 555, WhiteMat));   // Top Wall
+    Objects.Add(std::make_shared<xy_rect>(0, 555, 0, 555, 555, WhiteMat));  // Front Wall
+
+    return Objects;
+}
+
 int
 main()
 {
@@ -182,10 +203,11 @@ main()
 
     f64 AspectRatio = (16.0 / 9.0);
 
-    i32 WorldSelect = 5;
+    i32 WorldSelect = 6;
     color Background = Color(0, 0, 0);
 
     i32 SamplesPerPixel = 100;
+    i32 ImageWidth = 400;
 
     switch(WorldSelect)
     {
@@ -237,7 +259,19 @@ main()
             VerticalFOV = 20.0;
         } break;
 
-        default: { }
+        case 6:
+        {
+            World = CornellBox();
+            AspectRatio = 1.0;
+            ImageWidth = 600;
+            SamplesPerPixel = 200;
+            Background = Color(0, 0, 0);
+            LookFrom = Vec3d(278, 278, -800);
+            LookAt = Vec3d(278, 278, 0);
+            VerticalFOV = 40.0;
+        } break;
+
+        default: {}
     }
 
 #if 0
@@ -245,10 +279,9 @@ main()
     f64 Dist = (FocusAt - Camera.LookFrom).Magnitude();
 #endif
 
-    i32 ImageWidth = 400;
     camera Cam = camera(LookFrom, LookAt, Up, VerticalFOV, ImageWidth, AspectRatio,
                         DefocusAngle, FocusDistance, ShutterOpenTime, ShutterCloseTime);
-    Cam.Filename = "06_SimpleLight.ppm";
+    Cam.Filename = "06c_CornellBox.ppm";
     Cam.NumSamples = SamplesPerPixel;
     Cam.MaxBounces = 50;
     Cam.Render(World, Background);
