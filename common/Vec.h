@@ -49,9 +49,9 @@ template <typename T> SHU_EXPORT vec2f Normalize(const vec2<T> &A);
 template<typename T>
 struct vec3
 {
-  private:
+  public:
     static inline vec3<T> RandomInUnitSphere();
-
+  
   public:
     union
     {

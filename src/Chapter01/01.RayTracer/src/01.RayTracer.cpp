@@ -12,6 +12,7 @@
 #include <DiffuseLight.h>
 #include <AARect.h>
 #include <Box.h>
+#include <ConstantMedium.h>
 
 hittable_list
 RandomScene()
@@ -181,6 +182,37 @@ CornellBox()
     return Objects;
 }
 
+hittable_list
+CornellSmoke()
+{
+    hittable_list Objects;
+
+    std::shared_ptr<material> Red = std::make_shared<lambertian>(Color(.65, .05, .05));
+    std::shared_ptr<material> White = std::make_shared<lambertian>(Color(.73, .73, .73));
+    std::shared_ptr<material> Green = std::make_shared<lambertian>(Color(.12, .45, .15));
+    std::shared_ptr<material> Light = std::make_shared<diffuse_light>(Color(7, 7, 7));
+
+    Objects.Add(std::make_shared<yz_rect>(0, 555, 0, 555, 555, Green));
+    Objects.Add(std::make_shared<yz_rect>(0, 555, 0, 555, 0, Red));
+    Objects.Add(std::make_shared<xz_rect>(113, 443, 127, 432, 554, Light));
+    Objects.Add(std::make_shared<xz_rect>(0, 555, 0, 555, 555, White));
+    Objects.Add(std::make_shared<xz_rect>(0, 555, 0, 555, 0, White));
+    Objects.Add(std::make_shared<xy_rect>(0, 555, 0, 555, 555, White));
+
+    std::shared_ptr<hittable> Box1 = std::make_shared<box>(Vec3d(0,0,0), Vec3d(165,330,165), White);
+    Box1 = std::make_shared<rotate_y>(Box1, 15);
+    Box1 = std::make_shared<translate>(Box1, Vec3d(265, 0, 295));
+
+    std::shared_ptr<hittable> Box2 = std::make_shared<box>(Vec3d(0,0,0), Vec3d(165,165,165), White);
+    Box2 = std::make_shared<rotate_y>(Box2, -18);
+    Box2 = std::make_shared<translate>(Box2, Vec3d(130, 0, 65));
+
+    Objects.Add(std::make_shared<constant_density_medium>(Box1, 0.01, Color(0, 0, 0)));
+    Objects.Add(std::make_shared<constant_density_medium>(Box2, 0.01, Color(1, 1, 1)));
+
+    return Objects;
+}
+
 int
 main()
 {
@@ -214,7 +246,7 @@ main()
 
     f64 AspectRatio = (16.0 / 9.0);
 
-    i32 WorldSelect = 6;
+    i32 WorldSelect = 7;
     color Background = Color(0, 0, 0);
 
     i32 SamplesPerPixel = 100;
@@ -274,9 +306,20 @@ main()
         {
             World = CornellBox();
             AspectRatio = 1.0;
-            ImageWidth = 1080;
+            ImageWidth = 600;
             SamplesPerPixel = 400;
             Background = Color(0, 0, 0);
+            LookFrom = Vec3d(278, 278, -800);
+            LookAt = Vec3d(278, 278, 0);
+            VerticalFOV = 40.0;
+        } break;
+
+        case 7:
+        {
+            World = CornellSmoke();
+            AspectRatio = 1.0;
+            ImageWidth = 600;
+            SamplesPerPixel = 1000;
             LookFrom = Vec3d(278, 278, -800);
             LookAt = Vec3d(278, 278, 0);
             VerticalFOV = 40.0;
@@ -292,7 +335,7 @@ main()
 
     camera Cam = camera(LookFrom, LookAt, Up, VerticalFOV, ImageWidth, AspectRatio,
                         DefocusAngle, FocusDistance, ShutterOpenTime, ShutterCloseTime);
-    Cam.Filename = "07a_Instances_Box.ppm";
+    Cam.Filename = "8_Volumes.ppm";
     Cam.NumSamples = SamplesPerPixel;
     Cam.MaxBounces = 50;
     Cam.Render(World, Background);

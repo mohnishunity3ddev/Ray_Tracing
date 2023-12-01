@@ -34,7 +34,7 @@ box::box(const vec3d &P0, const vec3d &P1,
 
     sides.Add(std::make_shared<xy_rect>(P0.x, P1.x, P0.y, P1.y, P1.z, MaterialPtr));
     sides.Add(std::make_shared<xy_rect>(P0.x, P1.x, P0.y, P1.y, P0.z, MaterialPtr));
-    
+
     sides.Add(std::make_shared<xz_rect>(P0.x, P1.x, P0.z, P1.z, P1.y, MaterialPtr));
     sides.Add(std::make_shared<xz_rect>(P0.x, P1.x, P0.z, P1.z, P0.y, MaterialPtr));
 
@@ -190,7 +190,8 @@ rotate_y::Hit(const ray &Ray, const interval &Interval,
         vec3d P = Record.P;
         vec3d Normal = Record.Normal;
 
-        // NOTE: Actually Rotate the Position and Normal of the hit.
+        // NOTE: Actually Rotate the Position and Normal of the hit in the
+        // correct direction.
         P.x =  cos_theta*Record.P.x + sin_theta*Record.P.z;
         P.z = -sin_theta*Record.P.x + cos_theta*Record.P.z;
 
