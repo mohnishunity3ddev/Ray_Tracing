@@ -128,7 +128,7 @@ bvh_node::bvh_node(const std::vector<std::shared_ptr<hittable>> &SrcObjects,
     // NOTE: Set the bounding boxes of the child bvh nodes.
     aabb BoxLeft, BoxRight;
     if(!this->left->BoundingBox(Time0, Time1, BoxLeft) ||
-        this->right->BoundingBox(Time0, Time1, BoxRight))
+       !this->right->BoundingBox(Time0, Time1, BoxRight))
     {
         ASSERT(!"No bounding box in bvh_node constructor.\n");
     }

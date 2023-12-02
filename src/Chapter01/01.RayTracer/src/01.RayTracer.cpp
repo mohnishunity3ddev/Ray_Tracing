@@ -13,6 +13,8 @@
 #include <AARect.h>
 #include <Box.h>
 #include <ConstantMedium.h>
+#include <BVH.h>
+#include <MonteCarlo.h>
 
 hittable_list
 RandomScene()
@@ -213,9 +215,76 @@ CornellSmoke()
     return Objects;
 }
 
+
+hittable_list
+RT_TheNextWeek_FinalScene()
+{
+    hittable_list boxes1;
+    auto ground = std::make_shared<lambertian>(Color(0.48, 0.83, 0.53));
+
+    const int boxes_per_side = 20;
+    for (int i = 0; i < boxes_per_side; i++) {
+        for (int j = 0; j < boxes_per_side; j++) {
+            auto w = 100.0;
+            auto x0 = -1000.0 + i*w;
+            auto z0 = -1000.0 + j*w;
+            auto y0 = 0.0;
+            auto x1 = x0 + w;
+            auto y1 = RandRange(1,101);
+            auto z1 = z0 + w;
+
+            boxes1.Add(std::make_shared<box>(Vec3d(x0,y0,z0), Vec3d(x1,y1,z1), ground));
+        }
+    }
+
+    hittable_list objects;
+
+    objects.Add(std::make_shared<bvh_node>(boxes1, 0, 1));
+
+    auto light = std::make_shared<diffuse_light>(Color(7, 7, 7));
+    objects.Add(std::make_shared<xz_rect>(123, 423, 147, 412, 554, light));
+
+    auto center1 = Vec3d(400, 400, 200);
+    auto center2 = center1 + Vec3d(30,0,0);
+    auto moving_sphere_material = std::make_shared<lambertian>(Color(0.7, 0.3, 0.1));
+    objects.Add(std::make_shared<moving_sphere>(center1, center2, 0, 1, 50, moving_sphere_material));
+
+    objects.Add(std::make_shared<sphere>(Vec3d(260, 150, 45), 50, std::make_shared<dielectric>(1.5)));
+    objects.Add(std::make_shared<sphere>(
+        Vec3d(0, 150, 145), 50, std::make_shared<metal>(Color(0.8, 0.8, 0.9), 1.0)
+    ));
+
+    auto boundary = std::make_shared<sphere>(Vec3d(360,150,145), 70, std::make_shared<dielectric>(1.5));
+    objects.Add(boundary);
+    objects.Add(std::make_shared<constant_density_medium>(boundary, 0.2, Color(0.2, 0.4, 0.9)));
+    boundary = std::make_shared<sphere>(Vec3d(0, 0, 0), 5000, std::make_shared<dielectric>(1.5));
+    objects.Add(std::make_shared<constant_density_medium>(boundary, .0001, Color(1,1,1)));
+
+    auto emat = std::make_shared<lambertian>(std::make_shared<image_texture>("earthmap.jpg"));
+    objects.Add(std::make_shared<sphere>(Vec3d(400,200,400), 100, emat));
+    auto pertext = std::make_shared<noise_texture>(0.1);
+    objects.Add(std::make_shared<sphere>(Vec3d(220,280,300), 80, std::make_shared<lambertian>(pertext)));
+
+    hittable_list boxes2;
+    auto white = std::make_shared<lambertian>(Color(.73, .73, .73));
+    int ns = 1000;
+    for (int j = 0; j < ns; j++) {
+        boxes2.Add(std::make_shared<sphere>(vec3d::RandRange(0,165), 10, white));
+    }
+
+    objects.Add(std::make_shared<translate>(
+        std::make_shared<rotate_y>(std::make_shared<bvh_node>(boxes2, 0.0, 1.0), 15),
+        Vec3d(-100, 270, 395)));
+
+    return objects;
+}
+
 int
 main()
 {
+#if 0
+    MC::StratifiedEstimatePi();
+#else
     hittable_list World;
 
     // NOTE: Camera Params
@@ -246,7 +315,7 @@ main()
 
     f64 AspectRatio = (16.0 / 9.0);
 
-    i32 WorldSelect = 7;
+    i32 WorldSelect = 8;
     color Background = Color(0, 0, 0);
 
     i32 SamplesPerPixel = 100;
@@ -325,6 +394,18 @@ main()
             VerticalFOV = 40.0;
         } break;
 
+        case 8:
+        {
+            World = RT_TheNextWeek_FinalScene();
+            AspectRatio = 1.;
+            ImageWidth = 600;
+            SamplesPerPixel = 1000;
+            Background = Color(0, 0, 0);
+            LookFrom = Vec3d(478, 278, -600);
+            LookAt = Vec3d(278, 278, 0);
+            VerticalFOV = 40.;
+        } break;
+
         default: {}
     }
 
@@ -340,4 +421,5 @@ main()
     Cam.MaxBounces = 50;
     Cam.Render(World, Background);
     return 0;
+#endif
 }
