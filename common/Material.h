@@ -22,9 +22,9 @@ class material
         color Result = Color(0, 0, 0);
         return Result;
     }
-    
+
     virtual ~material() = default;
-    
+
     // NOTE: Produces a scattered ray based on the incident ray. This function
     // basically simulates how the incident ray gets reflected by the surface
     // with this kind of a material.
@@ -36,7 +36,7 @@ class lambertian : public material
   public:
     lambertian(const color &Color) : albedo(std::make_shared<solid_color>(Color)) {}
     lambertian(const std::shared_ptr<texture> Tex) : albedo(Tex) {}
-    
+
     b32
     Scatter(const ray &RayIn, const hit_record &Record, color &Attenuation,
             ray &ScatteredRay) const override
@@ -45,7 +45,7 @@ class lambertian : public material
         // much closer to thenormal of the surface point where the ray was
         // incident.
         vec3d ScatteredDirection = Record.Normal + vec3d::RandomUnitVector();
-        
+
         // NOTE: RandomUnitVector could return the negative of the Record.Normal
         // in which case the ScatteredDirection will be Zero or NearZero. to
         // avoid divide by zero errors later along with some other unexpected
@@ -54,13 +54,13 @@ class lambertian : public material
         {
             ScatteredDirection = Record.Normal;
         }
-        
+
         ScatteredRay = ray(Record.P, ScatteredDirection, RayIn.Time());
         Attenuation = albedo->Value(Record.U, Record.V, Record.P);
 
         return true;
     }
-  
+
   private:
     std::shared_ptr<texture> albedo;
 };
@@ -73,58 +73,58 @@ class metal : public material
         : albedo(a), fuzz((Fuzz < 1) ? Fuzz : 1)
     {
     }
-    
+
     b32
     Scatter(const ray &RayIn, const hit_record &Record, color &Attenuation,
             ray &ScatteredRay) const override
     {
         vec3d InDir = Normalize(RayIn.Direction());
         vec3d ReflectedRay = Reflect(InDir, Record.Normal);
-        
+
         vec3d FuzzVector = fuzz*(vec3d::RandomUnitVector());
-        
+
         // The idea is that basically wherever the reflected ray ends up, we
         // make a sphere there with the radius = fuzz, and then the same
         // reflected ray gets a different endpoint on the surface of the sphere.
         // If the fuzz factor is more, then radius of that sphere will be more
         // which would increase the haziness/fuzziness of the reflections.
         ScatteredRay = ray(Record.P, ReflectedRay + FuzzVector, RayIn.Time());
-        
+
         Attenuation = albedo;
-        
+
         return true;
     }
-  
-  
+
+
   private:
     color albedo;
-    
+
     // NOTE: To make the reflections fuzzy or a little bit hazy.
     // The more this fuzz factor, the more distorted/imperfect the reflected
     // vector is
-    f64 fuzz; 
+    f64 fuzz;
 };
 
 class dielectric : public material
 {
   public:
     dielectric(f64 IndexOfRefraction) : indexOfRefraction(IndexOfRefraction) {}
-    
+
     b32
     Scatter(const ray &RayIn, const hit_record &Record, color &Attenuation,
             ray &ScatteredRay) const override
     {
         Attenuation = Color(1., 1., 1.);
         f64 RefractionRatio = Record.FrontFace ? (1./indexOfRefraction) : indexOfRefraction;
-        
+
         vec3d UnitDirection = Normalize(RayIn.Direction());
         f64 CosTheta = MIN(Dot(-UnitDirection, Record.Normal), 1.);
         f64 SinTheta = sqrt(1. - CosTheta*CosTheta);
-        
+
         // NOTE: If this is > 1, then, this would invalidate snell's law.
         // SinTheta cannot be greater than 1.
         b32 TotalInternalReflection = (RefractionRatio*SinTheta > 1.);
-        
+
         vec3d Direction;
         if(TotalInternalReflection || (Reflectance(CosTheta, RefractionRatio) > Rand01()))
         {
@@ -134,15 +134,15 @@ class dielectric : public material
         {
             Direction = Refract(UnitDirection, Record.Normal, RefractionRatio);
         }
-        
+
         ScatteredRay = ray(Record.P, Direction, RayIn.Time());
-        
+
         return true;
     }
-  
+
   private:
     f64 indexOfRefraction;
-    
+
     // NOTE: Every glass material has varied reflectance based on the angle of
     // incidence, how to get the reflectance is an ugly formula, but we can use
     // schlick approcimation here.
