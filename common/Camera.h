@@ -6,14 +6,15 @@
 #include "File.h"
 #include "Material.h"
 
+#define USE_STRATIFIED_SAMPLING 0
+
 class camera
 {
   public:
     i32 ImageWidth = 100;
     const char *Filename;
-    i32 NumSamples = 10; // Count of random samples around each pixel.
+    i32 SamplesPerPixel = 10; // Count of random samples around each pixel.
     i32 MaxBounces = 10; // The Maximum number of bounces the rays are allowed to have.
-
 
     camera() {}
     camera(vec3d lookFrom, vec3d lookAt, vec3d globalUpVec, f64 vFov,
@@ -41,17 +42,34 @@ class camera
             {
                 color PixelColor = Color(0, 0, 0);
 
+#if !USE_STRATIFIED_SAMPLING
                 // Take the required number of samples
                 for(i32 SampleIndex = 0;
-                    SampleIndex < NumSamples;
+                    SampleIndex < SamplesPerPixel;
                     ++SampleIndex)
                 {
-                    // Basically sample around a random position inside the pixel "square"
-                    ray Ray = GetRandomRayAround(X, Y);
+
+                    // Basically sample around a random position inside the
+                    // pixel "square"
+                    ray Ray = GetRandomRayAround(X, Y, 0, 0);
                     PixelColor += RayColor(Ray, Background, MaxBounces, World);
                 }
 
-                WriteColor(&this->Data, PixelColor, this->NumSamples);
+#else
+                for(i32 SubI = 0;
+                    SubI < SqrtSamplesPerPixel;
+                    ++SubI)
+                {
+                    for(i32 SubJ = 0;
+                        SubJ < SqrtSamplesPerPixel;
+                        ++SubJ)
+                    {
+                        ray Ray = GetRandomRayAround(X, Y, SubI, SubJ);
+                        PixelColor += RayColor(Ray, Background, MaxBounces, World);
+                    }
+                }
+#endif
+                WriteColor(&this->Data, PixelColor, this->SamplesPerPixel);
             }
         }
 
@@ -68,6 +86,9 @@ class camera
     vec3d U, V, W;      // Camera Ortho-Normal Basis Vectors.
     vec3d DefocusDiskU;
     vec3d DefocusDiskV;
+
+    i32 SqrtSamplesPerPixel;
+    f64 InverseSqrtSPP;
 
     f64 AspectRatio = 1.0;
 
@@ -147,19 +168,39 @@ class camera
         PPMFile.ColorData = (u8 *)this->Data;
         PPMFile.Size = RequiredSize;
 
+        SqrtSamplesPerPixel = sqrt(SamplesPerPixel);
+        InverseSqrtSPP = 1. / SqrtSamplesPerPixel;
+
         Initialized = true;
     }
 
+    vec3d
+    PixelSampleSquare(i32 SubX, i32 SubY) const
+    {
+#if !USE_STRATIFIED_SAMPLING
+        // Random value b/w [-0.5,0.5)
+        f64 X = -0.5 + Rand01();
+        f64 Y = -0.5 + Rand01();
+#else
+        // Returns a random point in the square surrounding a pixel at the
+        // origin, given the two subpixel indices.
+        f64 X = -0.5 + InverseSqrtSPP*(SubX+Rand01());
+        f64 Y = -0.5 + InverseSqrtSPP*(SubY+Rand01());
+#endif
+        // Random Position Around the Pixel Square
+        vec3d Result = X*this->PixelDeltaU + Y*this->PixelDeltaV;
+
+        return Result;
+    }
+
     ray
-    GetRandomRayAround(i32 X, i32 Y) const
+    GetRandomRayAround(i32 X, i32 Y, i32 SubX, i32 SubY) const
     {
         // NOTE: Get a randomly-sampled camera ray for the pixel at location
         // i,j, originating from the camera defocus disk.
-
         vec3d PixelCenter = this->Pixel00 + (X*this->PixelDeltaU) + (Y*this->PixelDeltaV);
-
         // Random Position inside the Pixel Square
-        vec3d PixelSample = PixelCenter + PixelSampleSquare();
+        vec3d PixelSample = PixelCenter + PixelSampleSquare(SubX, SubY);
 
         vec3d RayOrigin = (this->DefocusAngle <= 0) ? this->Center : DefocusDiskSample();
         vec3d RayDirection = PixelSample - RayOrigin;
@@ -170,18 +211,6 @@ class camera
 
         ray Ray = ray(RayOrigin, RayDirection, RayTime);
         return Ray;
-    }
-
-    vec3d PixelSampleSquare() const
-    {
-        // Random value b/w [-0.5,0.5)
-        f64 X = -0.5 + Rand01();
-        f64 Y = -0.5 + Rand01();
-
-        // Random Position Around the Pixel Square
-        vec3d Result = X*this->PixelDeltaU + Y*this->PixelDeltaV;
-
-        return Result;
     }
 
     vec3d

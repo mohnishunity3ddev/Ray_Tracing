@@ -282,7 +282,7 @@ RT_TheNextWeek_FinalScene()
 int
 main()
 {
-#if 1
+#if 0
 
     MC::StratifiedEstimatePi();
 
@@ -317,7 +317,7 @@ main()
 
     f64 AspectRatio = (16.0 / 9.0);
 
-    i32 WorldSelect = 8;
+    i32 WorldSelect = 6;
     color Background = Color(0, 0, 0);
 
     i32 SamplesPerPixel = 100;
@@ -377,8 +377,8 @@ main()
         {
             World = CornellBox();
             AspectRatio = 1.0;
-            ImageWidth = 600;
-            SamplesPerPixel = 400;
+            ImageWidth = 400;
+            SamplesPerPixel = 1225;
             Background = Color(0, 0, 0);
             LookFrom = Vec3d(278, 278, -800);
             LookAt = Vec3d(278, 278, 0);
@@ -418,8 +418,8 @@ main()
 
     camera Cam = camera(LookFrom, LookAt, Up, VerticalFOV, ImageWidth, AspectRatio,
                         DefocusAngle, FocusDistance, ShutterOpenTime, ShutterCloseTime);
-    Cam.Filename = "8_Volumes.ppm";
-    Cam.NumSamples = SamplesPerPixel;
+    Cam.Filename = "10b_CornellSceneAfterStratifiedSampling.ppm";
+    Cam.SamplesPerPixel = SamplesPerPixel;
     Cam.MaxBounces = 50;
     Cam.Render(World, Background);
     return 0;
