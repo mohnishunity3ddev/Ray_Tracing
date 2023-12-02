@@ -69,6 +69,13 @@ MC::RunningEstimatePi()
 
 // Basically take a grid inside the -1,1 square. and take samples inside the
 // individual grid squares instead of the whole square.
+//
+// IMPORTANT: NOTE:
+// The reason why stratified is better is because it takes into
+// account all the subregions inside the square depending on how much you have
+// divided the square. So, it makes sure each subregion gets equal number of
+// samples, you get a uniformity like that which means that you converge to an
+// estimate of pi quickly.
 void
 MC::StratifiedEstimatePi()
 {

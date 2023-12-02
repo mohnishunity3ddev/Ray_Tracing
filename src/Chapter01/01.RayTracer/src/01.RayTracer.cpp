@@ -282,8 +282,10 @@ RT_TheNextWeek_FinalScene()
 int
 main()
 {
-#if 0
+#if 1
+
     MC::StratifiedEstimatePi();
+
 #else
     hittable_list World;
 
