@@ -51,7 +51,7 @@ struct vec3
 {
   public:
     static inline vec3<T> RandomInUnitSphere();
-  
+
   public:
     union
     {
@@ -510,7 +510,7 @@ Reflect(const vec3<T> &V, const vec3<T> &N)
     return Result;
 }
 
-// Proof is present in GoodNotes - Snell's Law Vector Form
+// NOTE: Proof is present in GoodNotes - Snell's Law Vector Form
 // N1ByN2 is refractive Index of the incident medium divided by the refractive
 // index of the refracting medium.
 template <typename T>

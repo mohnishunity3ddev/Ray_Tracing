@@ -13,7 +13,7 @@ class isotropic : public material
   public:
     isotropic(color c) : albedo(std::make_shared<solid_color>(c)) {}
     isotropic(std::shared_ptr<texture> a) : albedo(a) {}
-
+    
     virtual b32
     Scatter(const ray &RayIn, const hit_record &Record, color &Attenuation,
             ray &ScatteredRay) const override
@@ -70,7 +70,7 @@ constant_density_medium::Hit(const ray &Ray, const interval &Interval,
 
     // Print occasional samples when debugging. To enable, set enableDebug true.
     const bool EnableDebug = false;
-    const bool Debugging = EnableDebug && Rand01() < 0.00001;
+    const bool Debugging = EnableDebug && (Rand01() < 0.00001);
 
     hit_record Record1, Record2;
 

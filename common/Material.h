@@ -145,7 +145,7 @@ class dielectric : public material
 
     // NOTE: Every glass material has varied reflectance based on the angle of
     // incidence, how to get the reflectance is an ugly formula, but we can use
-    // schlick approcimation here.
+    // schlick approximation here.
     f64
     Reflectance(f64 CosTheta, f64 RefractionRatio) const
     {
