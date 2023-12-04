@@ -2,6 +2,9 @@
 
 #include "defines.h"
 
+#define FUNC(name) f64 name(f64 x)
+typedef FUNC(DoubleInDoubleOut);
+
 class MC
 {
   public:
@@ -10,6 +13,9 @@ class MC
     // NOTE: Stratified Sampling(Jittering)
     static void StratifiedEstimatePi();
 
+    static void OneDimensionalIntegration(DoubleInDoubleOut *IntegrandFunction,
+                                          f64 LowerBound, f64 UpperBound,
+                                          i64 NumSamples);
 };
 
 void
@@ -31,7 +37,7 @@ MC::EstimatePi()
         f64 y = RandRange(-1, 1);
         // Length of the vector given by the above x,y should be less than 1
         // to be inside the circle.
-        if (x * x + y * y < 1)
+        if (x*x + y*y < 1)
         {
             ++InsideCircle;
         }
@@ -111,6 +117,24 @@ MC::StratifiedEstimatePi()
     f64 StratifiedPI = 4.0*((f64)InsideCircleStratified / (f64)(SqrtN*SqrtN));
     printf("Regular Estimate of pi:%f and Stratified estimate of pi is: %f.\n",
            RegularPI, StratifiedPI);
+}
+
+void
+MC::OneDimensionalIntegration(DoubleInDoubleOut *IntegrandFunction,
+                                  f64 LowerBound, f64 UpperBound,
+                                  i64 NumSamples)
+{
+    f64 Sum = 0;
+    for(i32 Index = 0; Index < NumSamples; ++Index)
+    {
+        f64 x = RandRange(LowerBound, UpperBound);
+        Sum += IntegrandFunction(x);
+    }
+
+    f64 Integral = ((UpperBound - LowerBound) / (f64)NumSamples) * Sum;
+    printf("The result of integrating the function over the range %f to %f is: "
+           "%f.\n",
+           LowerBound, UpperBound, Integral);
 }
 
 #define MONTE_CARLO_H

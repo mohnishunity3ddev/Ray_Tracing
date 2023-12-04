@@ -23,10 +23,12 @@ struct vec2
     inline T Magnitude();
 };
 
+typedef vec2<f64> vec2d;
 typedef vec2<i32> vec2i;
 typedef vec2<f32> vec2f;
 typedef vec2<u32> vec2u;
 #define Vec2f Vec2<f32>
+#define Vec2d Vec2<f64>
 #define Vec2u Vec2<u32>
 #define Vec2i Vec2<i32>
 
