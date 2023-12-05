@@ -188,7 +188,7 @@ hittable_list
 CornellSmoke()
 {
     hittable_list Objects;
-    
+
     std::shared_ptr<material> Red = std::make_shared<lambertian>(Color(.65, .05, .05));
     std::shared_ptr<material> White = std::make_shared<lambertian>(Color(.73, .73, .73));
     std::shared_ptr<material> Green = std::make_shared<lambertian>(Color(.12, .45, .15));
@@ -283,14 +283,25 @@ RT_TheNextWeek_FinalScene()
 #define INTEGRAND_FUNCTION_2(Func1, Func2) [](f64 x) { return Func1(x)*Func2(x); }
 #define INTEGRAND_FUNCTION_3(Func1, Func2, Func3) [](f64 x) { return Func1(x)*Func2(x)*Func3(x); }
 
+f64
+PDFFunction(f64 x)
+{
+    f64 sinX = sin(x);
+    f64 Result = exp(-x / (2*pi))*sinX*sinX;
+    return Result;
+}
+
 int
 main()
 {
 #if 1
 
     // MC::StratifiedEstimatePi();
-    MC::OneDimensionalIntegration(INTEGRAND_FUNCTION_2(sin, cos), 0, 0.5*pi,
-                                  1'000'000);
+    // MC::OneDimensionalIntegration(INTEGRAND_FUNCTION_2(sin, cos), 0, 0.5*pi,
+    //                               1'000'000);
+    // MC::ComputePDFHalfwayPoint(&PDFFunction, 0, 2*pi);
+    // MC::ImportanceSampling();
+    MC::SurfaceIntegralOverSphere();
 
 #else
     hittable_list World;
